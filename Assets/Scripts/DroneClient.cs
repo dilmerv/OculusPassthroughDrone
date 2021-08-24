@@ -12,10 +12,10 @@ public class DroneClient : Singleton<DroneClient>
     private static readonly object lockObject = new object();
 
     [SerializeField]
-    private string hostOrIPAddress = "192.168.0.1";
+    private string sendAndReceiveIP = "192.168.0.1";
 
     [SerializeField]
-    private int port = 8889;
+    private int sendAndReceivePort = 8889;
 
     private UdpClient UdpClient { set; get; }
 
@@ -23,22 +23,21 @@ public class DroneClient : Singleton<DroneClient>
 
     private Queue<string> messages = new Queue<string>();
 
-    private Thread connectAndReceiveThread;
+    private Thread receivingThread;
 
-    private Thread sendThread;
+    private Thread sendingThread;
 
     private void Awake()
     {
         UdpClient = new UdpClient();
-        connectAndReceiveThread = CreateThread(ConnectAndReceieve);
-        sendThread = CreateThread(SendCommands);
+        receivingThread = CreateThread(ConnectAndReceieve);
+        sendingThread = CreateThread(SendCommands);
     }
 
     private Thread CreateThread(Action action)
     {
         ThreadStart threadStart = new ThreadStart(action);
         Thread thread = new Thread(threadStart);
-        //thread.IsBackground = true;
         thread.Start();
 
         return thread;
@@ -83,7 +82,7 @@ public class DroneClient : Singleton<DroneClient>
     {
         try
         {
-            UdpClient.Connect(hostOrIPAddress, port);
+            UdpClient.Connect(sendAndReceiveIP, sendAndReceivePort);
             if (UdpClient.Client.Connected) UpdateLogWithLock("Connected");
         }
         catch(Exception e)
@@ -143,7 +142,7 @@ public class DroneClient : Singleton<DroneClient>
             UdpClient.Close();
         }
 
-        connectAndReceiveThread.Abort();
-        sendThread.Abort();
+        receivingThread.Abort();
+        sendingThread.Abort();
     }
 }
