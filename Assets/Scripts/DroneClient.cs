@@ -38,8 +38,9 @@ public class DroneClient : Singleton<DroneClient>
     {
         ThreadStart threadStart = new ThreadStart(action);
         Thread thread = new Thread(threadStart);
-        thread.IsBackground = true;
+        //thread.IsBackground = true;
         thread.Start();
+
         return thread;
     }
 
@@ -55,11 +56,18 @@ public class DroneClient : Singleton<DroneClient>
         }
     }
 
-    private void SendCommand(string command)
+    public void SendCommand(string command)
     {
         lock (commands)
         {
-            commands.Enqueue(command);
+            if (Enum.TryParse(command, out DroneCommand droneCommand))
+            {
+                commands.Enqueue($"{droneCommand}");
+            }
+            else
+            {
+                messages.Enqueue($"Invalid command: {command}");
+            }
         }
     }
 
