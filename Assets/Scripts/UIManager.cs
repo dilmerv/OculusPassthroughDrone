@@ -13,6 +13,15 @@ public class UIManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // takeOff
+        if (OVRInput.GetDown(OVRInput.Button.One))
+        { 
         
+        }
+
+        if (OVRInput.GetDown(OVRInput.Button.Two))
+        {
+
+        }
     }
 }
