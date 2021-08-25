@@ -27,10 +27,28 @@ public class DroneClient : Singleton<DroneClient>
 
     private Thread sendingThread;
 
-    private void Awake()
+    public void StartDrone(ref bool droneStarted)
     {
         UdpClient = new UdpClient();
-        receivingThread = CreateThread(ConnectAndReceieve);
+        try
+        {
+            UdpClient.Connect(sendAndReceiveIP, sendAndReceivePort);
+            if (UdpClient.Client.Connected)
+            {
+                UpdateLogWithLock("Connected");
+                commands.Enqueue($"{DroneCommand.command}");
+                UpdateLogWithLock("Initiating SDK");
+                droneStarted = true;
+            }
+        }
+        catch (Exception e)
+        {
+            messages.Enqueue(e.Message);
+            droneStarted = false;
+            return;
+        }
+
+        receivingThread = CreateThread(Receieve);
         sendingThread = CreateThread(SendCommands);
     }
 
@@ -78,18 +96,8 @@ public class DroneClient : Singleton<DroneClient>
         }
     }
 
-    private void ConnectAndReceieve()
+    private void Receieve()
     {
-        try
-        {
-            UdpClient.Connect(sendAndReceiveIP, sendAndReceivePort);
-            if (UdpClient.Client.Connected) UpdateLogWithLock("Connected");
-        }
-        catch(Exception e)
-        {
-            messages.Enqueue(e.Message);
-        }
-
         while (true)
         {
             IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
