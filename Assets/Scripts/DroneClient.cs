@@ -30,8 +30,6 @@ public class DroneClient : Singleton<DroneClient>
 
     private Thread sendingThread;
 
-
-
     public void Awake()
     {
         if (!connectInAwake) return;
@@ -87,15 +85,15 @@ public class DroneClient : Singleton<DroneClient>
     {
         lock (lockObject)
         {
-            if (Enum.TryParse(command, out DroneCommand droneCommand))
-            {
-                commands.Enqueue($"{droneCommand}");
-            }
-            else
-            {
-                messages.Enqueue($"Invalid command: {command}");
-            }
-            
+            commands.Enqueue(command);
+            string[] commandCombination = command.Split(' ');
+            DroneCommand droneCommand;
+            //if (commandCombination.Length > 1 && Enum.TryParse(commandCombination[0], out droneCommand))
+            //    commands.Enqueue($"{droneCommand} {commandCombination[1]}");
+            //else if (commandCombination.Length == 1 && Enum.TryParse(command, out droneCommand))
+                //commands.Enqueue($"{droneCommand}");
+            //else
+              //  messages.Enqueue($"Invalid command: {command}");
         }
     }
 

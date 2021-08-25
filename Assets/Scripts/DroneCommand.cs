@@ -16,5 +16,6 @@ public enum DroneCommand
     forward,
     back,
     cw,
-    ccw
+    ccw,
+    speed
 }
