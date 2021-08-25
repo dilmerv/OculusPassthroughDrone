@@ -118,11 +118,8 @@ public class DroneClient : Singleton<DroneClient>
 
                 lock (lockObject)
                 {
-                    if (!string.IsNullOrEmpty(returnData))
-                    {
-                        UpdateLogWithLock($"Received: {returnData}");
-                        messages.Enqueue(returnData);
-                    }
+                    UpdateLogWithLock($"Received: {returnData}");
+                    messages.Enqueue(returnData);
                 }
             }
             catch (Exception e)
