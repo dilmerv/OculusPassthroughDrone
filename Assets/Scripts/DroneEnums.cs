@@ -18,12 +18,19 @@
     rc
 }
 
-public enum DroneDirection
+public enum DroneAction
 {
+    // move actions
     Left,
     Right,
     Forward,
     Backward,
     Up,
-    Down
+    Down,
+    // core actions
+    Connect,
+    InitializeSDK,
+    TakeOff,
+    Landing,
+    Emergency
 }

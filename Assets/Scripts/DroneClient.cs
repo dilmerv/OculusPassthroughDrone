@@ -30,14 +30,15 @@ public class DroneClient : Singleton<DroneClient>
 
     private Thread sendingThread;
 
+    public bool Connected { private set; get; }
+
     public void Awake()
     {
         if (!connectInAwake) return;
-        bool startDrone = false;
-        StartDrone(ref startDrone);
+        StartDrone();
     }
 
-    public void StartDrone(ref bool droneStarted)
+    public void StartDrone()
     {
         UdpClient = new UdpClient();
         try
@@ -46,13 +47,13 @@ public class DroneClient : Singleton<DroneClient>
             if (UdpClient.Client.Connected)
             {
                 UpdateLogWithLock("Connected");
-                droneStarted = true;
+                Connected = true;
             }
         }
         catch (Exception e)
         {
             messages.Enqueue(e.Message);
-            droneStarted = false;
+            Connected = false;
             return;
         }
 
@@ -117,11 +118,11 @@ public class DroneClient : Singleton<DroneClient>
 
                 lock (lockObject)
                 {
-                    //if (!string.IsNullOrEmpty(returnData))
-                    //{
+                    if (!string.IsNullOrEmpty(returnData))
+                    {
                         UpdateLogWithLock($"Received: {returnData}");
                         messages.Enqueue(returnData);
-                    //}
+                    }
                 }
             }
             catch (Exception e)
