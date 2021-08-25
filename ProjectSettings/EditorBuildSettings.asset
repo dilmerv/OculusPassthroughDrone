@@ -5,7 +5,13 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/StandaloneClientTest.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
-  m_configObjects: {}
+  - enabled: 1
+    path: Assets/Scenes/OculusDroneClientTest.unity
+    guid: c5b020f8761243846919a2f68de9e02d
+  m_configObjects:
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 4b0ce314e82a8ad48b5e438af56dc342, type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: d32fe601dfc2ff045a3662d9d6ea2bf5, type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: e117423c38b9c2a4f8272cc029c5b009, type: 2}

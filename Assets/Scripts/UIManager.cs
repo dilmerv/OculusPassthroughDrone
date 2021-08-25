@@ -12,6 +12,11 @@ public class UIManager : MonoBehaviour
         
     }
 
+    public void StartDroneFromUI()
+    {
+        DroneClient.Instance.StartDrone(ref droneStarted);
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -27,15 +32,25 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        // takeOff
+        // initSDK
         if (OVRInput.GetDown(OVRInput.Button.One))
-        { 
-            
+        {
+            Logger.Instance.LogInfo("Init SDK");
+            DroneClient.Instance.SendCommand($"{DroneCommand.command}"); 
         }
 
-        // landing
+        // takeOff
         if (OVRInput.GetDown(OVRInput.Button.Two))
         {
+            Logger.Instance.LogInfo("TakeOff");
+            DroneClient.Instance.SendCommand($"{DroneCommand.takeoff}");
+
+        }
+
+        if (OVRInput.GetDown(OVRInput.Button.PrimaryHandTrigger) || OVRInput.GetDown(OVRInput.Button.SecondaryHandTrigger))
+        {
+            Logger.Instance.LogInfo("Landing");
+            DroneClient.Instance.SendCommand($"{DroneCommand.land}");
 
         }
     }

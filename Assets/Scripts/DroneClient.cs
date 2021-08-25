@@ -12,10 +12,13 @@ public class DroneClient : Singleton<DroneClient>
     private static readonly object lockObject = new object();
 
     [SerializeField]
-    private string sendAndReceiveIP = "192.168.0.1";
+    private string sendAndReceiveIP = "192.168.10.1";
 
     [SerializeField]
     private int sendAndReceivePort = 8889;
+
+    [SerializeField]
+    private bool connectInAwake = false;
 
     private UdpClient UdpClient { set; get; }
 
@@ -27,6 +30,15 @@ public class DroneClient : Singleton<DroneClient>
 
     private Thread sendingThread;
 
+
+
+    public void Awake()
+    {
+        if (!connectInAwake) return;
+        bool startDrone = false;
+        StartDrone(ref startDrone);
+    }
+
     public void StartDrone(ref bool droneStarted)
     {
         UdpClient = new UdpClient();
@@ -36,8 +48,6 @@ public class DroneClient : Singleton<DroneClient>
             if (UdpClient.Client.Connected)
             {
                 UpdateLogWithLock("Connected");
-                commands.Enqueue($"{DroneCommand.command}");
-                UpdateLogWithLock("Initiating SDK");
                 droneStarted = true;
             }
         }
@@ -75,7 +85,7 @@ public class DroneClient : Singleton<DroneClient>
 
     public void SendCommand(string command)
     {
-        lock (commands)
+        lock (lockObject)
         {
             if (Enum.TryParse(command, out DroneCommand droneCommand))
             {
@@ -85,6 +95,7 @@ public class DroneClient : Singleton<DroneClient>
             {
                 messages.Enqueue($"Invalid command: {command}");
             }
+            
         }
     }
 
@@ -98,6 +109,8 @@ public class DroneClient : Singleton<DroneClient>
 
     private void Receieve()
     {
+        UpdateLogWithLock("Starting receieving thread...");
+
         while (true)
         {
             IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
@@ -109,11 +122,11 @@ public class DroneClient : Singleton<DroneClient>
 
                 lock (lockObject)
                 {
-                    if (!string.IsNullOrEmpty(returnData))
-                    {
+                    //if (!string.IsNullOrEmpty(returnData))
+                    //{
                         UpdateLogWithLock($"Received: {returnData}");
                         messages.Enqueue(returnData);
-                    }
+                    //}
                 }
             }
             catch (Exception e)
@@ -125,6 +138,8 @@ public class DroneClient : Singleton<DroneClient>
 
     private void SendCommands()
     {
+        UpdateLogWithLock("Starting sending thread...");
+
         while (true)
         {
             lock (lockObject)
@@ -150,7 +165,10 @@ public class DroneClient : Singleton<DroneClient>
             UdpClient.Close();
         }
 
-        receivingThread.Abort();
-        sendingThread.Abort();
+        if(receivingThread != null)
+            receivingThread.Abort();
+
+        if(sendingThread != null)
+            sendingThread.Abort();
     }
 }
