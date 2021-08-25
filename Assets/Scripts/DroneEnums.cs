@@ -27,10 +27,18 @@ public enum DroneAction
     Backward,
     Up,
     Down,
+    YawLeft,
+    YawRight,
     // core actions
     Connect,
     InitializeSDK,
     TakeOff,
     Landing,
     Emergency
+}
+
+public enum DroneSpeedType
+{ 
+    Positive,
+    Negative
 }
