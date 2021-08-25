@@ -116,6 +116,5 @@ public class DroneController : MonoBehaviour
         {
             direction = 0;
         }
-        direction = 0;
     }
 }
