@@ -66,7 +66,6 @@ public class DroneClient : Singleton<DroneClient>
         ThreadStart threadStart = new ThreadStart(action);
         Thread thread = new Thread(threadStart);
         thread.Start();
-
         return thread;
     }
 
