@@ -1,7 +1,4 @@
-﻿using System;
-
-[Serializable]
-public enum DroneCommand
+﻿public enum DroneCommand
 {
     command,
     takeoff,
@@ -17,5 +14,16 @@ public enum DroneCommand
     back,
     cw,
     ccw,
-    speed
+    speed,
+    rc
+}
+
+public enum DroneDirection
+{
+    Left,
+    Right,
+    Forward,
+    Backward,
+    Up,
+    Down
 }

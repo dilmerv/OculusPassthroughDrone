@@ -1,25 +1,34 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class DroneController : MonoBehaviour
 {
     private bool droneStarted = false;
-
     private const int speed = 20;
 
-    private int leftDirection, rightDirection;
-    private int forwardDirection, backwardDirection;
-    private int upDirection, downDirection;
+    Dictionary<DroneDirection, Action> MovementBindings = new Dictionary<DroneDirection, Action>
+    {
+        { DroneDirection.Forward, () => HandleDirection(OVRInput.Button.SecondaryThumbstickUp, DroneDirection.Forward)},
+        { DroneDirection.Backward, () => HandleDirection(OVRInput.Button.SecondaryThumbstickDown, DroneDirection.Backward)},
+        { DroneDirection.Left, () => HandleDirection(OVRInput.Button.SecondaryThumbstickLeft, DroneDirection.Left)},
+        { DroneDirection.Right, () => HandleDirection(OVRInput.Button.SecondaryThumbstickRight, DroneDirection.Right)},
+        { DroneDirection.Up, () => HandleDirection(OVRInput.Button.PrimaryThumbstickUp, DroneDirection.Up)},
+        { DroneDirection.Down, () => HandleDirection(OVRInput.Button.PrimaryThumbstickDown, DroneDirection.Down)},
+    };
 
     void Update()
     {
-        // initiate SDK
-        if(OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger) || OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger))
+        // Start Drone Threads
+        if(OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger))
         {
-            Logger.Instance.LogInfo("Starting drone and SDK");
+            Logger.Instance.LogInfo("Connecting to drone and starting listeners");
             DroneClient.Instance.StartDrone(ref droneStarted);
         }
 
         if(!droneStarted) return;
+
+        #region Main Commands
 
         // initSDK - A
         if (OVRInput.GetDown(OVRInput.Button.One))
@@ -42,113 +51,55 @@ public class DroneController : MonoBehaviour
             DroneClient.Instance.SendCommand($"{DroneCommand.land}");
         }
 
-        // forward
-        if (OVRInput.Get(OVRInput.Button.SecondaryThumbstickUp))
-        {
-            forwardDirection += speed;
-            forwardDirection = Mathf.Clamp(forwardDirection, -100, 100);
-            DroneClient.Instance.SendCommand($"rc 0 {forwardDirection} 0 0");
-        }
-        if (OVRInput.GetUp(OVRInput.Button.SecondaryThumbstickUp))
-        {
-            forwardDirection = 0;
-        }
-
-        // back
-        if (OVRInput.Get(OVRInput.Button.SecondaryThumbstickDown))
-        {
-            backwardDirection -= speed;
-            backwardDirection = Mathf.Clamp(backwardDirection, -100, 100);
-            DroneClient.Instance.SendCommand($"rc 0 {backwardDirection} 0 0");
-        }
-        if (OVRInput.GetUp(OVRInput.Button.SecondaryThumbstickDown))
-        {
-            backwardDirection = 0;
-        }
-
-        // left
-        if (OVRInput.Get(OVRInput.Button.SecondaryThumbstickLeft))
-        {
-            leftDirection -= speed;
-            leftDirection = Mathf.Clamp(leftDirection, -100, 100);
-            DroneClient.Instance.SendCommand($"rc {leftDirection} 0 0 0");
-        }
-        if (OVRInput.GetUp(OVRInput.Button.SecondaryThumbstickLeft))
-        {
-            leftDirection = 0;
-        }
-
-
-        // right
-        if (OVRInput.Get(OVRInput.Button.SecondaryThumbstickRight))
-        {
-            rightDirection += speed;
-            rightDirection = Mathf.Clamp(rightDirection, -100, 100);
-            DroneClient.Instance.SendCommand($"rc {rightDirection} 0 0 0");
-        }
-        if (OVRInput.GetUp(OVRInput.Button.SecondaryThumbstickRight))
-        {
-            rightDirection = 0;
-        }
-
-        // up
-        if (OVRInput.Get(OVRInput.Button.PrimaryThumbstickUp))
-        {
-            upDirection += speed;
-            upDirection = Mathf.Clamp(upDirection, -100, 100);
-            DroneClient.Instance.SendCommand($"rc 0 0 {upDirection} 0");
-        }
-        if (OVRInput.GetUp(OVRInput.Button.PrimaryThumbstickUp))
-        {
-            upDirection = 0;
-        }
-
-        // down
-        if (OVRInput.Get(OVRInput.Button.PrimaryThumbstickDown))
-        {
-            downDirection -= speed;
-            downDirection = Mathf.Clamp(downDirection, -100, 100);
-            DroneClient.Instance.SendCommand($"rc 0 0 {downDirection} 0");
-        }
-        if (OVRInput.GetUp(OVRInput.Button.PrimaryThumbstickDown))
-        {
-            downDirection = 0;
-        }
-
         // emergency press start button
         if (OVRInput.GetDown(OVRInput.Button.Start))
         {
             DroneClient.Instance.SendCommand($"{DroneCommand.emergency}");
         }
+
+        #endregion
+
+        #region Handle Movement
+
+        MovementBindings[DroneDirection.Forward]();
+        MovementBindings[DroneDirection.Backward]();
+        MovementBindings[DroneDirection.Left]();
+        MovementBindings[DroneDirection.Right]();
+        MovementBindings[DroneDirection.Up]();
+        MovementBindings[DroneDirection.Down]();
+
+        #endregion
     }
-    private void HandleDirection(OVRInput.Button button, ref int direction, DirectionOption directionOption)
+    private static void HandleDirection(OVRInput.Button button, DroneDirection directionOption)
     {
+        int direction = 0;
+
         if (OVRInput.Get(button))
         {
             string commandFormat = string.Empty;
             switch(directionOption)
             {
-                case DirectionOption.Left:
+                case DroneDirection.Left:
                     direction -= speed;
                     commandFormat = "rc {0} 0 0 0";
                     break;
-                case DirectionOption.Backward:
+                case DroneDirection.Backward:
                     direction -= speed;
                     commandFormat = "rc 0 {0} 0 0";
                     break;
-                case DirectionOption.Down:
+                case DroneDirection.Down:
                     direction -= speed;
                     commandFormat = "rc 0 0 {0} 0";
                     break;
-                case DirectionOption.Right:
+                case DroneDirection.Right:
                     direction += speed;
                     commandFormat = "rc {0} 0 0 0";
                     break;
-                case DirectionOption.Forward:
+                case DroneDirection.Forward:
                     direction += speed;
                     commandFormat = "rc 0 {0} 0 0";
                     break;
-                case DirectionOption.Up:
+                case DroneDirection.Up:
                     direction += speed;
                     commandFormat = "rc 0 0 {0} 0";
                     break;
@@ -160,15 +111,5 @@ public class DroneController : MonoBehaviour
         {
             direction = 0;
         }
-    }
-
-    enum DirectionOption
-    { 
-        Left,
-        Right,
-        Forward,
-        Backward,
-        Up,
-        Down
     }
 }

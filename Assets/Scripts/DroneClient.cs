@@ -85,24 +85,21 @@ public class DroneClient : Singleton<DroneClient>
     {
         lock (lockObject)
         {
-            commands.Enqueue(command);
             string[] commandCombination = command.Split(' ');
             DroneCommand droneCommand;
-            //if (commandCombination.Length > 1 && Enum.TryParse(commandCombination[0], out droneCommand))
-            //    commands.Enqueue($"{droneCommand} {commandCombination[1]}");
-            //else if (commandCombination.Length == 1 && Enum.TryParse(command, out droneCommand))
-                //commands.Enqueue($"{droneCommand}");
-            //else
-              //  messages.Enqueue($"Invalid command: {command}");
+
+            // validate command
+            if ((commandCombination.Length > 1 && Enum.TryParse(commandCombination[0], out droneCommand)) ||
+                (commandCombination.Length == 1 && Enum.TryParse(command, out droneCommand)))
+                commands.Enqueue(command);
+            else
+                messages.Enqueue($"Invalid command: {command}");
         }
     }
 
     private void UpdateLogWithLock(string message)
     {
-        lock (lockObject)
-        {
-            messages.Enqueue(message);
-        }
+        lock (lockObject) messages.Enqueue(message);
     }
 
     private void Receieve()
@@ -159,9 +156,7 @@ public class DroneClient : Singleton<DroneClient>
     private void OnDestroy()
     {
         if(UdpClient != null)
-        {
             UdpClient.Close();
-        }
 
         if(receivingThread != null)
             receivingThread.Abort();
