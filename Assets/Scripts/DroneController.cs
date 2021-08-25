@@ -7,14 +7,21 @@ public class DroneController : MonoBehaviour
     private bool droneStarted = false;
     private const int speed = 20;
 
-    Dictionary<DroneDirection, Action> MovementBindings = new Dictionary<DroneDirection, Action>
+    private int forwardDirection = 0;
+    private int backwardDirection = 0;
+    private int leftDirection = 0;
+    private int rightDirection = 0;
+    private int upDirection = 0;
+    private int downDirection = 0;
+
+    Dictionary<DroneDirection, Action<int>> MovementBindings = new Dictionary<DroneDirection, Action<int>>
     {
-        { DroneDirection.Forward, () => HandleDirection(OVRInput.Button.SecondaryThumbstickUp, DroneDirection.Forward)},
-        { DroneDirection.Backward, () => HandleDirection(OVRInput.Button.SecondaryThumbstickDown, DroneDirection.Backward)},
-        { DroneDirection.Left, () => HandleDirection(OVRInput.Button.SecondaryThumbstickLeft, DroneDirection.Left)},
-        { DroneDirection.Right, () => HandleDirection(OVRInput.Button.SecondaryThumbstickRight, DroneDirection.Right)},
-        { DroneDirection.Up, () => HandleDirection(OVRInput.Button.PrimaryThumbstickUp, DroneDirection.Up)},
-        { DroneDirection.Down, () => HandleDirection(OVRInput.Button.PrimaryThumbstickDown, DroneDirection.Down)},
+        { DroneDirection.Forward, (int direction) => HandleDirection(OVRInput.Button.SecondaryThumbstickUp, ref direction, DroneDirection.Forward)},
+        { DroneDirection.Backward, (int direction) => HandleDirection(OVRInput.Button.SecondaryThumbstickDown, ref direction, DroneDirection.Backward)},
+        { DroneDirection.Left, (int direction) => HandleDirection(OVRInput.Button.SecondaryThumbstickLeft, ref direction, DroneDirection.Left)},
+        { DroneDirection.Right, (int direction) => HandleDirection(OVRInput.Button.SecondaryThumbstickRight, ref direction, DroneDirection.Right)},
+        { DroneDirection.Up, (int direction) => HandleDirection(OVRInput.Button.PrimaryThumbstickUp, ref direction, DroneDirection.Up)},
+        { DroneDirection.Down, (int direction) => HandleDirection(OVRInput.Button.PrimaryThumbstickDown, ref direction, DroneDirection.Down)},
     };
 
     void Update()
@@ -61,19 +68,17 @@ public class DroneController : MonoBehaviour
 
         #region Handle Movement
 
-        MovementBindings[DroneDirection.Forward]();
-        MovementBindings[DroneDirection.Backward]();
-        MovementBindings[DroneDirection.Left]();
-        MovementBindings[DroneDirection.Right]();
-        MovementBindings[DroneDirection.Up]();
-        MovementBindings[DroneDirection.Down]();
+        MovementBindings[DroneDirection.Forward](forwardDirection);
+        MovementBindings[DroneDirection.Backward](backwardDirection);
+        MovementBindings[DroneDirection.Left](leftDirection);
+        MovementBindings[DroneDirection.Right](rightDirection);
+        MovementBindings[DroneDirection.Up](upDirection);
+        MovementBindings[DroneDirection.Down](downDirection);
 
         #endregion
     }
-    private static void HandleDirection(OVRInput.Button button, DroneDirection directionOption)
+    private static void HandleDirection(OVRInput.Button button, ref int direction, DroneDirection directionOption)
     {
-        int direction = 0;
-
         if (OVRInput.Get(button))
         {
             string commandFormat = string.Empty;
@@ -111,5 +116,6 @@ public class DroneController : MonoBehaviour
         {
             direction = 0;
         }
+        direction = 0;
     }
 }
