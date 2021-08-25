@@ -5,7 +5,6 @@ using UnityEngine;
 public class DroneController : MonoBehaviour
 {
     private const int speed = 20;
-
     private int forwardDirection = 0;
     private int backwardDirection = 0;
     private int leftDirection = 0;
@@ -25,7 +24,7 @@ public class DroneController : MonoBehaviour
 
     Dictionary<DroneAction, Action> CoreActionInputBindings = new Dictionary<DroneAction, Action>
     {
-        { DroneAction.Connect, () => HandleCoreAction(OVRInput.Button.SecondaryIndexTrigger, DroneClient.Instance.StartDrone)},
+        { DroneAction.Connect, () => HandleCoreAction(OVRInput.Button.SecondaryIndexTrigger, () => DroneClient.Instance.StartDrone())},
         { DroneAction.InitializeSDK, () => HandleCoreAction(OVRInput.Button.One, () => DroneClient.Instance.SendCommand($"{DroneCommand.command}"))},
         { DroneAction.TakeOff, () => HandleCoreAction(OVRInput.Button.Two, () => DroneClient.Instance.SendCommand($"{DroneCommand.takeoff}"))},
         { DroneAction.Landing, () => HandleCoreAction(OVRInput.Button.PrimaryHandTrigger, () => DroneClient.Instance.SendCommand($"{DroneCommand.land}"))},
