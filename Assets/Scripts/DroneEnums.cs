@@ -15,7 +15,8 @@
     cw,
     ccw,
     speed,
-    rc
+    rc,
+    battery
 }
 
 public enum DroneAction

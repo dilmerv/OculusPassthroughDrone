@@ -115,10 +115,10 @@ TextureImporter:
       name: DroneView_0
       rect:
         serializedVersion: 2
-        x: 2010
+        x: 1826
         y: 582
-        width: 300
-        height: 312
+        width: 484
+        height: 137
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -136,27 +136,6 @@ TextureImporter:
       name: DroneView_1
       rect:
         serializedVersion: 2
-        x: 38
-        y: 32
-        width: 27
-        height: 534
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 242ade0147c1334e0800000000000000
-      internalID: -2003226124423945662
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: DroneView_2
-      rect:
-        serializedVersion: 2
         x: 88
         y: 32
         width: 2222
@@ -168,8 +147,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 16f6afad44316ae40800000000000000
-      internalID: 5667238367544897377
+      spriteID: 242ade0147c1334e0800000000000000
+      internalID: -2003226124423945662
       vertices: []
       indices: 
       edges: []
