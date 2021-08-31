@@ -20,7 +20,7 @@ public class DroneClient : Singleton<DroneClient>
     [SerializeField]
     private int statePort = 8890;
 
-    [SerializeField]
+    [SerializeField, Tooltip("Used for Standalone Scene")]
     private bool connectInAwake = false;
 
     private Queue<DroneRequest> droneRequests = new Queue<DroneRequest>();
