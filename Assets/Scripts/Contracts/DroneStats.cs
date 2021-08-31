@@ -1,12 +1,23 @@
-﻿public class DroneStats
+﻿using System;
+
+[Serializable]
+public class DroneStats
 {
-    public string Speed { get; set; }
+    public string speed;
 
-    public string Battery { get; set; }
+    public string battery;
 
-    public string FlyTime { get; set; }
+    public string time;
 
-    public string Temp { get; set; }
+    public string tof;
 
-    public string Heght { get; set; }
+    public string temp;
+
+    public string height;
+
+    public string acceleration;
+
+    public string baro;
+
+    public string attitude;
 }

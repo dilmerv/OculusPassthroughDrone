@@ -10,17 +10,20 @@ public class DronePilotOverlay : MonoBehaviour
     {
         if (ovrPassthroughLayer == null)
         {
-            Logger.Instance.LogError("Drone Pilot is missing serialize fields");
+            Logger.Instance.LogWarning("Drone Pilot is missing serialize fields");
             invalid = true;
         }
 
-        if (invalid) return;
+        if (!invalid)
+        {
+            ovrPassthroughLayer.AddSurfaceGeometry(gameObject, true);;
+        }
 
-        ovrPassthroughLayer.AddSurfaceGeometry(gameObject, true);
     }
 
     private void OnDestroy()
     {
-        ovrPassthroughLayer.RemoveSurfaceGeometry(gameObject);
+        if(ovrPassthroughLayer != null)
+            ovrPassthroughLayer.RemoveSurfaceGeometry(gameObject);
     }
 }

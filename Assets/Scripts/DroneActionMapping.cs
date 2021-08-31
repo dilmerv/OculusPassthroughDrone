@@ -21,11 +21,25 @@ public class DroneActionMapping : Singleton<DroneActionMapping>
 
     public Dictionary<DroneAction, Action> CoreActionInputBindings = new Dictionary<DroneAction, Action>
     {
-        { DroneAction.Connect, () => HandleCoreAction(OVRInput.Button.SecondaryIndexTrigger, () => DroneClient.Instance.StartDrone())},
-        { DroneAction.InitializeSDK, () => HandleCoreAction(OVRInput.Button.One, () => DroneClient.Instance.SendCommand($"{DroneCommand.command}"))},
-        { DroneAction.TakeOff, () => HandleCoreAction(OVRInput.Button.Two, () => DroneClient.Instance.SendCommand($"{DroneCommand.takeoff}"))},
-        { DroneAction.Landing, () => HandleCoreAction(OVRInput.Button.PrimaryHandTrigger, () => DroneClient.Instance.SendCommand($"{DroneCommand.land}"))},
-        { DroneAction.Emergency, () => HandleCoreAction(OVRInput.Button.Start, () => DroneClient.Instance.SendCommand($"{DroneCommand.emergency}"))},
+        { 
+            DroneAction.Connect, () => HandleCoreAction(OVRInput.Button.SecondaryIndexTrigger, () => DroneClient.Instance.StartDrone())
+        },
+        { 
+            DroneAction.InitializeSDK, () => HandleCoreAction(OVRInput.Button.One, () => DroneClient.Instance.SendCommand(
+                new DroneRequest { RequestType = RequestType.ControlCommand, Command = DroneCommand.command }))
+        },
+        { 
+            DroneAction.TakeOff, () => HandleCoreAction(OVRInput.Button.Two, () => DroneClient.Instance.SendCommand(
+                new DroneRequest { RequestType = RequestType.ControlCommand, Command = DroneCommand.takeoff }))
+        },
+        { 
+            DroneAction.Landing, () => HandleCoreAction(OVRInput.Button.PrimaryHandTrigger, () => DroneClient.Instance.SendCommand(
+                new DroneRequest { RequestType = RequestType.ControlCommand, Command = DroneCommand.land }))
+        },
+        { 
+            DroneAction.Emergency, () => HandleCoreAction(OVRInput.Button.Start, () => DroneClient.Instance.SendCommand(
+                new DroneRequest { RequestType = RequestType.ControlCommand, Command = DroneCommand.emergency }))
+        }
     };
 
     private static void HandleCoreAction(OVRInput.Button button, Action callback)
@@ -38,7 +52,12 @@ public class DroneActionMapping : Singleton<DroneActionMapping>
         if (OVRInput.Get(button))
         {
             direction = droneSpeedType == DroneSpeedType.Negative ? direction - DroneConstants.speed : direction + DroneConstants.speed;
-            DroneClient.Instance.SendCommand(string.Format(commandFormat, Mathf.Clamp(direction, -100, 100)));
+            DroneClient.Instance.SendCommand(new DroneRequest
+            {
+                RequestType = RequestType.ControlCommand,
+                Command = DroneCommand.rc,
+                Payload = string.Format(commandFormat, Mathf.Clamp(direction, -100, 100))
+            });
         }
         else if (OVRInput.GetUp(button)) direction = 0;
     }

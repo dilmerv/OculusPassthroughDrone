@@ -1,8 +1,8 @@
-﻿using System.Linq;
-using DilmerGames.Core.Singletons;
+﻿using DilmerGames.Core.Singletons;
+using System;
+using System.Linq;
 using TMPro;
 using UnityEngine;
-using System;
 
 public class Logger : Singleton<Logger>
 {
@@ -30,7 +30,7 @@ public class Logger : Singleton<Logger>
 
         if (enabled)
         {
-            debugAreaText.text += $"<color=\"white\">{DateTime.Now.ToString("HH:mm:ss.fff")} {this.GetType().Name} enabled</color>\n";
+            debugAreaText.text = $"<color=\"white\">{DateTime.Now.ToString("HH:mm:ss.fff")} {this.GetType().Name} enabled</color>\n";
         }
     }
 
