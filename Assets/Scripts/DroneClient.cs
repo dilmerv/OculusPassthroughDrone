@@ -11,45 +11,47 @@ public class DroneClient : Singleton<DroneClient>
 {
     private static readonly object lockObject = new object();
 
-    public class DroneRequest
-    { 
-        public DroneCommand Command { get; set; }
-    }
-
-    public class DroneReponse
-    {
-        public DroneCommand Command { get; set; }
-
-        public string Response { get; set; }
-    }
-
     [SerializeField]
     private string droneIP = "192.168.10.1";
 
     [SerializeField]
     private int controllerPort = 8889;
+
     [SerializeField]
     private int statePort = 8890;
 
     [SerializeField]
     private bool connectInAwake = false;
 
-    private Queue<string> messages = new Queue<string>();
-
-    [SerializeField]
-    private DroneStats DroneStats = new DroneStats();
-
-    private Queue<DroneCommand> states = new Queue<DroneCommand>();
+    private Queue<DroneRequest> droneRequests = new Queue<DroneRequest>();
 
     private UdpClient UdpClient { set; get; }
 
-    private UdpClient UdpStateClient { set; get; }
+    private Thread receivingThread;
 
-    private Thread controllerReceivingThread;
-
-    private Thread stateReceivingThread;
-
+    // Connected: is set once UDP Connection is successful
     public bool Connected { private set; get; }
+
+    // SDKInitialized: is required before sending flying commands the drone
+    // this is pretty much saying let's add SDK connectivity
+    public bool SDKInitialized { private set; get; }
+
+    public DroneStats DroneStats { get; set; } = new DroneStats();
+
+    // logging
+
+    // Use messages to queued up log entries
+    // normally needed when using a secondary thread
+    public Queue<string> LogMessages { get; set; } = new Queue<string>();
+
+    void Update()
+    {
+        if (LogMessages.Count > 0)
+        {
+            string message = LogMessages.Dequeue();
+            Logger.Instance.LogInfo(message);
+        }
+    }
 
     public void Awake()
     {
@@ -59,16 +61,12 @@ public class DroneClient : Singleton<DroneClient>
 
     public void StartDrone()
     {
-        UdpClient = new UdpClient();
         try
         {
+            UdpClient = new UdpClient();
             UdpClient.Connect(droneIP, controllerPort);
-
-            if (UdpClient.Client.Connected)
-            {
-                UpdateLogWithLock("Connected");
-                Connected = true;
-            }
+            Connected = UdpClient.Client.Connected;
+            if(Connected) UpdateLogWithLock("Connected");
         }
         catch (Exception e)
         {
@@ -78,8 +76,7 @@ public class DroneClient : Singleton<DroneClient>
         }
 
         // start threads
-        controllerReceivingThread = CreateThread(ControllerReceiever);
-        stateReceivingThread = CreateThread(ProcessStateCommand);
+        receivingThread = CreateThread(ProcessCommand);
     }
 
     private Thread CreateThread(Action action)
@@ -90,37 +87,61 @@ public class DroneClient : Singleton<DroneClient>
         return thread;
     }
 
+    // This method should only be used for control type commands
+    // use DroneRequest parameter to read and control commands
     public void SendCommand(string command)
     {
-        byte[] message = Encoding.ASCII.GetBytes(command);
+        Enum.TryParse(command, out DroneCommand droneCommand);
+
+        var droneRequest = new DroneRequest
+        {
+            RequestType = RequestType.ControlCommand,
+            Command = droneCommand
+        };
+
+        droneRequests.Enqueue(droneRequest);
+
+        byte[] message = Encoding.ASCII.GetBytes($"{droneRequest.Payload}");
         UdpClient.Send(message, message.Length);
     }
 
-    public void SendStateCommand(DroneCommand command)
+    public void SendCommand(DroneRequest droneRequest)
     {
-        states.Enqueue(command);
-        byte[] message = Encoding.ASCII.GetBytes($"{command}?");
+        droneRequests.Enqueue(droneRequest);
+        byte[] message = Encoding.ASCII.GetBytes($"{droneRequest.Payload}");
         UdpClient.Send(message, message.Length);
     }
 
-    public void ProcessStateCommand()
+    public void ProcessCommand()
     {
         while (true)
         {
             lock (lockObject)
             {
-                if (states.Count > 0)
+                if (droneRequests.Count > 0)
                 {
-                    IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, controllerPort);
-                    string responseData = string.Empty;
+                    IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Parse(droneIP), statePort);
 
                     try
                     {
                         byte[] receiveBytes = UdpClient.Receive(ref RemoteIpEndPoint);
-                        responseData = Encoding.ASCII.GetString(receiveBytes);
+                        string responseData = Encoding.ASCII.GetString(receiveBytes);
 
-                        DroneStats.battery = responseData;
-                        UpdateLogWithLock($"Controller Received: {responseData}");
+                        DroneRequest droneRequest = droneRequests.Dequeue();
+                        
+                        DroneStats.UpdateStats(new DroneReponse
+                        {
+                            Command = droneRequest.Command,
+                            Response = responseData
+                        });
+
+                        // only happens once
+                        if(!SDKInitialized) SDKInitialized = droneRequest.Command == DroneCommand.command;
+
+                        UpdateLogWithLock($"Drone Request Type: {droneRequest.RequestType}");
+                        UpdateLogWithLock($"Drone Request Command: {droneRequest.Command}");
+                        UpdateLogWithLock($"Drone Request Payload: {droneRequest.Payload}");
+                        UpdateLogWithLock($"\nServer Received: {responseData}");
                     }
                     catch (Exception e)
                     {
@@ -131,57 +152,23 @@ public class DroneClient : Singleton<DroneClient>
         }
     }
 
-    private void Update()
-    {
-        if (messages.Count > 0)
-        {
-            string message = messages.Dequeue();
-            Logger.Instance.LogInfo(message);
-        }
-    }
-
     private void UpdateLogWithLock(string message)
     {
         lock (lockObject)
         {
-            messages.Enqueue(message);
-        }
-    }
-
-    private void ControllerReceiever()
-    {
-        UpdateLogWithLock("Starting controller receiver...");
-
-        while (true)
-        {
-            IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, controllerPort);
-
-            try
-            {
-                byte[] receiveBytes = UdpClient.Receive(ref RemoteIpEndPoint);
-                var returnData = Encoding.ASCII.GetString(receiveBytes);
-
-                lock (lockObject)
-                {
-                    UpdateLogWithLock($"Controller Received: {returnData}");
-                }
-            }
-            catch (Exception e)
-            {
-                UpdateLogWithLock(e.Message);
-            }
+            LogMessages.Enqueue(message);
         }
     }
 
     private void OnDestroy()
     {
-        if(UdpClient != null)
+        if (UdpClient != null)
+        {
             UdpClient.Close();
+            UdpClient.Dispose();
+        }
 
-        if(controllerReceivingThread != null)
-            controllerReceivingThread.Abort();
-
-        if(stateReceivingThread != null)
-            stateReceivingThread.Abort();
+        if (receivingThread != null)
+            receivingThread.Abort();
     }
 }

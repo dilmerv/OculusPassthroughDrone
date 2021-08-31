@@ -14,9 +14,20 @@
     back,
     cw,
     ccw,
-    speed,
     rc,
-    battery
+
+    // get commands
+    battery,
+    speed,
+    time,
+    height,
+    temp,
+    attitude,
+    baro,
+    acceleration,
+    tof,
+    wifi
+
 }
 
 public enum DroneAction
@@ -42,4 +53,10 @@ public enum DroneSpeedType
 { 
     Positive,
     Negative
+}
+
+public enum RequestType
+{
+    ControlCommand,
+    ReadCommand,
 }

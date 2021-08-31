@@ -7,9 +7,17 @@ public class DroneStats
 
     public string battery;
 
-    public string flyTime;
+    public string time;
+
+    public string tof;
 
     public string temp;
 
     public string height;
+
+    public string acceleration;
+
+    public string baro;
+
+    public string attitude;
 }
