@@ -25,10 +25,7 @@ public class DroneStateManager : Singleton<DroneStateManager>
 
     private Coroutine statsCoroutine;
 
-    public void StarStats()
-    {
-        statsCoroutine = StartCoroutine(StartStatsUpdate());
-    }
+    public void StarStats() => statsCoroutine = StartCoroutine(StartStatsUpdate());
 
     public IEnumerator StartStatsUpdate()
     {

@@ -21,12 +21,17 @@ public class DroneActionMapping : Singleton<DroneActionMapping>
 
     public Dictionary<DroneAction, Action> CoreActionInputBindings = new Dictionary<DroneAction, Action>
     {
-        { 
+        {
             DroneAction.Connect, () => HandleCoreAction(OVRInput.Button.SecondaryIndexTrigger, () => DroneClient.Instance.StartDrone())
         },
-        { 
-            DroneAction.InitializeSDK, () => HandleCoreAction(OVRInput.Button.One, () => DroneClient.Instance.SendCommand(
-                new DroneRequest { RequestType = RequestType.ControlCommand, Command = DroneCommand.command }))
+        {
+            DroneAction.InitializeSDK, () =>
+            {
+                HandleCoreAction(OVRInput.Button.One,
+                    () => DroneClient.Instance.SendCommand(
+                    new DroneRequest { RequestType = RequestType.ControlCommand, Command = DroneCommand.command }),
+                    () => DroneStateManager.Instance.StarStats());
+            }
         },
         { 
             DroneAction.TakeOff, () => HandleCoreAction(OVRInput.Button.Two, () => DroneClient.Instance.SendCommand(
@@ -42,9 +47,9 @@ public class DroneActionMapping : Singleton<DroneActionMapping>
         }
     };
 
-    private static void HandleCoreAction(OVRInput.Button button, Action callback)
-    {   
-        if (OVRInput.GetDown(button)) callback?.Invoke();
+    private static void HandleCoreAction(OVRInput.Button button, params Action[] callbacks)
+    {
+        if (OVRInput.GetDown(button)) foreach (var callback in callbacks) callback?.Invoke();
     }
 
     private static void HandleDirection(OVRInput.Button button, ref int direction, string commandFormat, DroneSpeedType droneSpeedType)

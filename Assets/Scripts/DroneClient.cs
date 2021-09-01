@@ -61,6 +61,8 @@ public class DroneClient : Singleton<DroneClient>
 
     public void StartDrone()
     {
+        if (Connected) return;
+
         try
         {
             UdpClient = new UdpClient();
