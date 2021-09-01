@@ -19,6 +19,8 @@ public class DroneStateManager : Singleton<DroneStateManager>
     private TextMeshProUGUI tempText;
     [SerializeField]
     private TextMeshProUGUI tofText;
+    [SerializeField]
+    private TextMeshProUGUI heightText;
 
     [SerializeField]
     private TextMeshProUGUI lastUpdated;
@@ -39,7 +41,7 @@ public class DroneStateManager : Singleton<DroneStateManager>
         {
             yield return new WaitForSeconds(updateFrequency);
 
-            DroneCommand[] commands = new DroneCommand[] { DroneCommand.battery, DroneCommand.speed, 
+            DroneCommand[] commands = new DroneCommand[] { DroneCommand.battery, DroneCommand.speed, DroneCommand.height,
                 DroneCommand.time, DroneCommand.temp, DroneCommand.tof };
 
             foreach (var command in commands)
@@ -59,6 +61,7 @@ public class DroneStateManager : Singleton<DroneStateManager>
             timeText.text = $"Time: {DroneClient.Instance.DroneStats.time}";
             tempText.text = $"Temp: {DroneClient.Instance.DroneStats.temp}";
             tofText.text = $"Tof: {DroneClient.Instance.DroneStats.tof}";
+            heightText.text = $"Height: {DroneClient.Instance.DroneStats.height}";
 
             lastUpdated.text = $"{DateTime.Now}";
         }

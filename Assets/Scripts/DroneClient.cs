@@ -1,6 +1,7 @@
 using DilmerGames.Core.Singletons;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -131,19 +132,25 @@ public class DroneClient : Singleton<DroneClient>
 
                         DroneRequest droneRequest = droneRequests.Dequeue();
                         
+                        // only happens once
+                        if(!SDKInitialized) SDKInitialized = droneRequest.Command == DroneCommand.command;
+
+                        // continue if OK or ERROR
+                        if ((new string[] { "OK", "ERROR" }).Contains(responseData.ToUpper())) continue;
+
                         DroneStats.UpdateStats(new DroneReponse
                         {
                             Command = droneRequest.Command,
                             Response = responseData
                         });
 
-                        // only happens once
-                        if(!SDKInitialized) SDKInitialized = droneRequest.Command == DroneCommand.command;
-
-                        UpdateLogWithLock($"Drone Request Type: {droneRequest.RequestType}");
-                        UpdateLogWithLock($"Drone Request Command: {droneRequest.Command}");
-                        UpdateLogWithLock($"Drone Request Payload: {droneRequest.Payload}");
-                        UpdateLogWithLock($"\nServer Received: {responseData}");
+                        if (!droneRequest.Command.IsStatsCommand())
+                        {
+                            UpdateLogWithLock($"Drone Request Type: {droneRequest.RequestType}");
+                            UpdateLogWithLock($"Drone Request Command: {droneRequest.Command}");
+                            UpdateLogWithLock($"Drone Request Payload: {droneRequest.Payload}");
+                            UpdateLogWithLock($"\nServer Received: {responseData}");
+                        }
                     }
                     catch (Exception e)
                     {
@@ -171,6 +178,8 @@ public class DroneClient : Singleton<DroneClient>
         }
 
         if (receivingThread != null)
+        {
             receivingThread.Abort();
+        }
     }
 }

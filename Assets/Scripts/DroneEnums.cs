@@ -60,3 +60,9 @@ public enum RequestType
     ControlCommand,
     ReadCommand,
 }
+
+public enum ResponseType
+{ 
+    OK,
+    ERROR
+}

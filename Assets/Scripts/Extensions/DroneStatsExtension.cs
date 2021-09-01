@@ -34,4 +34,17 @@
 
         }
     }
+
+    public static bool IsStatsCommand(this DroneCommand command)
+    {
+        return command == DroneCommand.battery ||
+            command == DroneCommand.speed ||
+            command == DroneCommand.height ||
+            command == DroneCommand.temp ||
+            command == DroneCommand.time ||
+            command == DroneCommand.tof ||
+            command == DroneCommand.acceleration ||
+            command == DroneCommand.baro ||
+            command == DroneCommand.attitude;
+    }
 }
