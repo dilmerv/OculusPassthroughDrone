@@ -5,17 +5,17 @@ public class DroneStats
 {
     public string pitch;
 
+    public string yaw;
+
+    public string roll;
+
     public string battery;
 
     public string time;
 
     public string tof;
 
-    public string roll;
-
     public string height;
-
-    public string yaw;
 
     public string baro;
 

@@ -10,17 +10,43 @@ public class DroneStateManager : Singleton<DroneStateManager>
     private float updateFrequency = 1.0f;
 
     [SerializeField]
-    private TextMeshProUGUI batteryText;
+    private TextMeshProUGUI pitchText;
+    
     [SerializeField]
-    private TextMeshProUGUI speedText;
+    private TextMeshProUGUI yawText;
+    
+    [SerializeField]
+    private TextMeshProUGUI rollText;
+    
+    [SerializeField]
+    private TextMeshProUGUI batteryText;
+
     [SerializeField]
     private TextMeshProUGUI timeText;
-    [SerializeField]
-    private TextMeshProUGUI tempText;
+
     [SerializeField]
     private TextMeshProUGUI tofText;
+
     [SerializeField]
     private TextMeshProUGUI heightText;
+
+    [SerializeField]
+    private TextMeshProUGUI baroText;
+    
+    [SerializeField]
+    private TextMeshProUGUI templText;
+
+    [SerializeField]
+    private TextMeshProUGUI temphText;
+
+    [SerializeField]
+    private TextMeshProUGUI agxText;
+
+    [SerializeField]
+    private TextMeshProUGUI agyText;
+    
+    [SerializeField]
+    private TextMeshProUGUI agzText;
 
     [SerializeField]
     private TextMeshProUGUI lastUpdated;
@@ -41,27 +67,19 @@ public class DroneStateManager : Singleton<DroneStateManager>
         {
             yield return new WaitForSeconds(updateFrequency);
 
-            DroneCommand[] commands = new DroneCommand[] { DroneCommand.battery, DroneCommand.speed, DroneCommand.height,
-                DroneCommand.time, DroneCommand.temp, DroneCommand.tof };
-
-            foreach (var command in commands)
-            {
-                if (DroneClient.Instance.SDKInitialized)
-                {
-                    DroneClient.Instance.SendCommand(new DroneRequest
-                    {
-                        RequestType = RequestType.ReadCommand,
-                        Command = command
-                    });
-                }
-            }
-
+            pitchText.text = $"Pitch: {DroneClient.Instance.DroneStats.pitch}";
+            yawText.text = $"Yaw: {DroneClient.Instance.DroneStats.yaw}";
+            rollText.text = $"Yaw: {DroneClient.Instance.DroneStats.roll}";
             batteryText.text = $"Battery: {DroneClient.Instance.DroneStats.battery}";
-            speedText.text = $"Speed: {DroneClient.Instance.DroneStats.pitch}";
             timeText.text = $"Time: {DroneClient.Instance.DroneStats.time}";
-            tempText.text = $"Temp: {DroneClient.Instance.DroneStats.roll}";
             tofText.text = $"Tof: {DroneClient.Instance.DroneStats.tof}";
             heightText.text = $"Height: {DroneClient.Instance.DroneStats.height}";
+            baroText.text = $"Baro: {DroneClient.Instance.DroneStats.baro}";
+            templText.text = $"Templ: {DroneClient.Instance.DroneStats.templ}";
+            temphText.text = $"Temph: {DroneClient.Instance.DroneStats.temph}";
+            agxText.text = $"Temph: {DroneClient.Instance.DroneStats.agx}";
+            agyText.text = $"Temph: {DroneClient.Instance.DroneStats.agy}";
+            agzText.text = $"Temph: {DroneClient.Instance.DroneStats.agz}";
 
             lastUpdated.text = $"{DateTime.Now}";
         }
