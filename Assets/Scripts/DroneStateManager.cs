@@ -51,22 +51,27 @@ public class DroneStateManager : Singleton<DroneStateManager>
     [SerializeField]
     private TextMeshProUGUI lastUpdated;
 
+    [SerializeField]
+    private TextMeshProUGUI stateText;
+
     private Coroutine statsCoroutine;
 
     public void StarStats() => statsCoroutine = StartCoroutine(StartStatsUpdate());
 
     public IEnumerator StartStatsUpdate()
     {
-        if (!DroneClient.Instance.SDKInitialized)
-        {
-            Logger.Instance.LogWarning("SDK is not initialized yet");
-            yield return null;
-        }
-
         while (true) 
         {
             yield return new WaitForSeconds(updateFrequency);
 
+            if (!DroneClient.Instance.SDKInitialized)
+            {
+                Logger.Instance.LogWarning("SDK is not initialized yet");
+                stateText.text = $"State: <color=red>offline</color>";
+                continue;
+            }
+
+            stateText.text = $"State: <color=green>online</color>";
             pitchText.text = $"Pitch: {DroneClient.Instance.DroneStats.pitch}";
             yawText.text = $"Yaw: {DroneClient.Instance.DroneStats.yaw}";
             rollText.text = $"Yaw: {DroneClient.Instance.DroneStats.roll}";

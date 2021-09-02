@@ -116,7 +116,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1826
-        y: 582
+        y: 573
         width: 484
         height: 219
       alignment: 0
@@ -149,6 +149,27 @@ TextureImporter:
       bones: []
       spriteID: 242ade0147c1334e0800000000000000
       internalID: -2003226124423945662
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DroneView_2
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 568
+        width: 1244
+        height: 230
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 16f6afad44316ae40800000000000000
+      internalID: 5667238367544897377
       vertices: []
       indices: 
       edges: []
