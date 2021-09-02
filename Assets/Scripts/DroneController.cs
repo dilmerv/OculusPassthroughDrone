@@ -11,12 +11,12 @@ public class DroneController : MonoBehaviour
    
     void Update()
     {
+        #region Main Commands
         DroneActionMapping.Instance.CoreActionInputBindings[DroneAction.Connect]();
+        DroneActionMapping.Instance.CoreActionInputBindings[DroneAction.InitializeSDK]();
 
         if (!DroneClient.Instance.SDKInitialized) return;
 
-        #region Main Commands
-        DroneActionMapping.Instance.CoreActionInputBindings[DroneAction.InitializeSDK]();
         DroneActionMapping.Instance.CoreActionInputBindings[DroneAction.TakeOff]();
         DroneActionMapping.Instance.CoreActionInputBindings[DroneAction.Landing]();
         DroneActionMapping.Instance.CoreActionInputBindings[DroneAction.Emergency]();

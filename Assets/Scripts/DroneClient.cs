@@ -23,8 +23,6 @@ public class DroneClient : Singleton<DroneClient>
     [SerializeField, Tooltip("Used for Standalone Scene")]
     private bool connectInAwake = false;
 
-    private Queue<DroneRequest> droneRequests = new Queue<DroneRequest>();
-
     private UdpClient UdpClient { set; get; }
 
     private Thread receivingThread;
@@ -86,7 +84,7 @@ public class DroneClient : Singleton<DroneClient>
             Command = droneCommand
         };
 
-        droneRequests.Enqueue(droneRequest);
+        LogMessages.Enqueue($"{droneRequest.Command} {droneRequest.RequestType} {droneRequest.Payload}");
 
         byte[] message = Encoding.ASCII.GetBytes($"{droneRequest.Payload}");
         UdpClient.Send(message, message.Length, new IPEndPoint(IPAddress.Parse(droneIP), controllerPort));
@@ -94,7 +92,8 @@ public class DroneClient : Singleton<DroneClient>
 
     public void SendCommand(DroneRequest droneRequest)
     {
-        droneRequests.Enqueue(droneRequest);
+        LogMessages.Enqueue($"{droneRequest.Command} {droneRequest.RequestType} {droneRequest.Payload}");
+
         byte[] message = Encoding.ASCII.GetBytes($"{droneRequest.Payload}");
         UdpClient.Send(message, message.Length, new IPEndPoint(IPAddress.Parse(droneIP), controllerPort));
     }
@@ -149,9 +148,6 @@ public class DroneClient : Singleton<DroneClient>
             UdpClient.Dispose();
         }
 
-        if (receivingThread != null)
-        {
-            receivingThread.Abort();
-        }
+        if (receivingThread != null) receivingThread.Abort();
     }
 }
