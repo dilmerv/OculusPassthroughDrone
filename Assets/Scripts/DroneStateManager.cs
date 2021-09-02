@@ -57,9 +57,9 @@ public class DroneStateManager : Singleton<DroneStateManager>
             }
 
             batteryText.text = $"Battery: {DroneClient.Instance.DroneStats.battery}";
-            speedText.text = $"Speed: {DroneClient.Instance.DroneStats.speed}";
+            speedText.text = $"Speed: {DroneClient.Instance.DroneStats.pitch}";
             timeText.text = $"Time: {DroneClient.Instance.DroneStats.time}";
-            tempText.text = $"Temp: {DroneClient.Instance.DroneStats.temp}";
+            tempText.text = $"Temp: {DroneClient.Instance.DroneStats.roll}";
             tofText.text = $"Tof: {DroneClient.Instance.DroneStats.tof}";
             heightText.text = $"Height: {DroneClient.Instance.DroneStats.height}";
 

@@ -13,7 +13,7 @@ public class DroneController : MonoBehaviour
     {
         DroneActionMapping.Instance.CoreActionInputBindings[DroneAction.Connect]();
 
-        if (!DroneClient.Instance.Connected) return;
+        if (!DroneClient.Instance.SDKInitialized) return;
 
         #region Main Commands
         DroneActionMapping.Instance.CoreActionInputBindings[DroneAction.InitializeSDK]();

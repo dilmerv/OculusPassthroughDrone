@@ -1,50 +1,61 @@
-﻿public static class DroneStatsExtension
+﻿using System;
+using System.Linq;
+
+public static class DroneStatsExtension
 {
-    public static void UpdateStats(this DroneStats stats, DroneReponse droneReponse)
+    public static void UpdateStats(this DroneStats stats, string droneReponse)
     {
-        switch (droneReponse.Command)
+        var statsDelimited = droneReponse.Split(';');
+
+        foreach (var stat in statsDelimited)
         {
-            case DroneCommand.battery:
-                stats.battery = droneReponse.Response;
-                break;
-            case DroneCommand.speed:
-                stats.speed = droneReponse.Response;
-                break;
-            case DroneCommand.height:
-                stats.height = droneReponse.Response;
-                break;
-            case DroneCommand.temp:
-                stats.temp = droneReponse.Response;
-                break;
-            case DroneCommand.time:
-                stats.time = droneReponse.Response;
-                break;
-            case DroneCommand.tof:
-                stats.tof = droneReponse.Response;
-                break;
-            case DroneCommand.acceleration:
-                stats.acceleration = droneReponse.Response;
-                break;
-            case DroneCommand.baro:
-                stats.baro = droneReponse.Response;
-                break;
-            case DroneCommand.attitude:
-                stats.attitude = droneReponse.Response;
-                break;
-
+            var statSplit = stat.Split(':');
+            if (Enum.TryParse(statSplit.First(), true, out DroneStatsAttribute attribute))
+            {
+                var value = statSplit.Last();
+                switch (attribute)
+                {
+                    case DroneStatsAttribute.bat:
+                        stats.battery = value;
+                        break;
+                    case DroneStatsAttribute.pitch:
+                        stats.pitch = value;
+                        break;
+                    case DroneStatsAttribute.roll:
+                        stats.roll = value;
+                        break;
+                    case DroneStatsAttribute.yaw:
+                        stats.yaw = value;
+                        break;
+                    case DroneStatsAttribute.h:
+                        stats.height = value;
+                        break;
+                    case DroneStatsAttribute.time:
+                        stats.time = value;
+                        break;
+                    case DroneStatsAttribute.tof:
+                        stats.tof = value;
+                        break;
+                    case DroneStatsAttribute.baro:
+                        stats.baro = value;
+                        break;
+                    case DroneStatsAttribute.templ:
+                        stats.templ = value;
+                        break;
+                    case DroneStatsAttribute.temph:
+                        stats.temph = value;
+                        break;
+                    case DroneStatsAttribute.agx:
+                        stats.agx = value;
+                        break;
+                    case DroneStatsAttribute.agy:
+                        stats.agy = value;
+                        break;
+                    case DroneStatsAttribute.agz:
+                        stats.agz = value;
+                        break;
+                }
+            }
         }
-    }
-
-    public static bool IsStatsCommand(this DroneCommand command)
-    {
-        return command == DroneCommand.battery ||
-            command == DroneCommand.speed ||
-            command == DroneCommand.height ||
-            command == DroneCommand.temp ||
-            command == DroneCommand.time ||
-            command == DroneCommand.tof ||
-            command == DroneCommand.acceleration ||
-            command == DroneCommand.baro ||
-            command == DroneCommand.attitude;
     }
 }
