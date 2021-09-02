@@ -39,8 +39,8 @@ public enum DroneAction
     Backward,
     Up,
     Down,
-    YawLeft,
-    YawRight,
+    RotateRight,
+    RotateLeft,
     // core actions
     Connect,
     InitializeSDK,
