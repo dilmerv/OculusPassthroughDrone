@@ -74,7 +74,7 @@ public class DroneStateManager : Singleton<DroneStateManager>
             stateText.text = $"State: <color=green>online</color>";
             pitchText.text = $"Pitch: {DroneClient.Instance.DroneStats.pitch}";
             yawText.text = $"Yaw: {DroneClient.Instance.DroneStats.yaw}";
-            rollText.text = $"Yaw: {DroneClient.Instance.DroneStats.roll}";
+            rollText.text = $"Roll: {DroneClient.Instance.DroneStats.roll}";
             batteryText.text = $"Battery: {DroneClient.Instance.DroneStats.battery}";
             timeText.text = $"Time: {DroneClient.Instance.DroneStats.time}";
             tofText.text = $"Tof: {DroneClient.Instance.DroneStats.tof}";
@@ -82,9 +82,9 @@ public class DroneStateManager : Singleton<DroneStateManager>
             baroText.text = $"Baro: {DroneClient.Instance.DroneStats.baro}";
             templText.text = $"Templ: {DroneClient.Instance.DroneStats.templ}";
             temphText.text = $"Temph: {DroneClient.Instance.DroneStats.temph}";
-            agxText.text = $"Temph: {DroneClient.Instance.DroneStats.agx}";
-            agyText.text = $"Temph: {DroneClient.Instance.DroneStats.agy}";
-            agzText.text = $"Temph: {DroneClient.Instance.DroneStats.agz}";
+            agxText.text = $"Agx: {DroneClient.Instance.DroneStats.agx}";
+            agyText.text = $"Agy: {DroneClient.Instance.DroneStats.agy}";
+            agzText.text = $"Agz: {DroneClient.Instance.DroneStats.agz}";
 
             lastUpdated.text = $"{DateTime.Now}";
         }
