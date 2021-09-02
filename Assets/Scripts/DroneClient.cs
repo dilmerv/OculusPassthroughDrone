@@ -26,9 +26,13 @@ public class DroneClient : Singleton<DroneClient>
 
     private Queue<DroneRequest> droneRequests = new Queue<DroneRequest>();
 
-    private UdpClient UdpClient { set; get; }
+    private UdpClient UdpClient { set; get; } = new UdpClient();
+
+    private UdpClient UdpStateClient { set; get; } = new UdpClient();
 
     private Thread receivingThread;
+
+    private Thread stateThread;
 
     // Connected: is set once UDP Connection is successful
     public bool Connected { private set; get; }
@@ -66,8 +70,8 @@ public class DroneClient : Singleton<DroneClient>
 
         try
         {
-            UdpClient = new UdpClient();
             UdpClient.Connect(droneIP, controllerPort);
+            UdpStateClient.Client.Bind(new IPEndPoint(IPAddress.Any, statePort));
             Connected = UdpClient.Client.Connected;
             if(Connected) UpdateLogWithLock("Connected");
         }
@@ -80,6 +84,30 @@ public class DroneClient : Singleton<DroneClient>
 
         // start threads
         receivingThread = CreateThread(ProcessCommand);
+        stateThread = CreateThread(StateCommand);
+    }
+
+    public void StateCommand()
+    {
+        while (true)
+        {
+            lock (lockObject)
+            {
+                if (!SDKInitialized) return;
+                IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, statePort);
+
+                try
+                {
+                    byte[] receiveBytes = UdpStateClient.Receive(ref RemoteIpEndPoint);
+                    string responseData = Encoding.ASCII.GetString(receiveBytes);
+                    UpdateLogWithLock($"State: {responseData}");
+                }
+                catch (Exception e)
+                {
+                    UpdateLogWithLock(e.Message);
+                }
+            }
+        }
     }
 
     private Thread CreateThread(Action action)
@@ -177,9 +205,16 @@ public class DroneClient : Singleton<DroneClient>
             UdpClient.Dispose();
         }
 
-        if (receivingThread != null)
+        if (UdpStateClient != null)
         {
-            receivingThread.Abort();
+            UdpStateClient.Close();
+            UdpStateClient.Dispose();
         }
+
+        if (receivingThread != null)
+            receivingThread.Abort();
+
+        if(stateThread != null)
+            stateThread.Abort();
     }
 }
