@@ -10,20 +10,49 @@ public class DroneStateManager : Singleton<DroneStateManager>
     private float updateFrequency = 1.0f;
 
     [SerializeField]
-    private TextMeshProUGUI batteryText;
+    private TextMeshProUGUI pitchText;
+    
     [SerializeField]
-    private TextMeshProUGUI speedText;
+    private TextMeshProUGUI yawText;
+    
+    [SerializeField]
+    private TextMeshProUGUI rollText;
+    
+    [SerializeField]
+    private TextMeshProUGUI batteryText;
+
     [SerializeField]
     private TextMeshProUGUI timeText;
-    [SerializeField]
-    private TextMeshProUGUI tempText;
+
     [SerializeField]
     private TextMeshProUGUI tofText;
+
     [SerializeField]
     private TextMeshProUGUI heightText;
 
     [SerializeField]
+    private TextMeshProUGUI baroText;
+    
+    [SerializeField]
+    private TextMeshProUGUI templText;
+
+    [SerializeField]
+    private TextMeshProUGUI temphText;
+
+    [SerializeField]
+    private TextMeshProUGUI agxText;
+
+    [SerializeField]
+    private TextMeshProUGUI agyText;
+    
+    [SerializeField]
+    private TextMeshProUGUI agzText;
+
+    [SerializeField]
     private TextMeshProUGUI lastUpdated;
+
+    [SerializeField]
+    private TextMeshProUGUI stateText;
 
     private Coroutine statsCoroutine;
 
@@ -31,37 +60,31 @@ public class DroneStateManager : Singleton<DroneStateManager>
 
     public IEnumerator StartStatsUpdate()
     {
-        if (!DroneClient.Instance.SDKInitialized)
-        {
-            Logger.Instance.LogWarning("SDK is not initialized yet");
-            yield return null;
-        }
-
         while (true) 
         {
             yield return new WaitForSeconds(updateFrequency);
 
-            DroneCommand[] commands = new DroneCommand[] { DroneCommand.battery, DroneCommand.speed, DroneCommand.height,
-                DroneCommand.time, DroneCommand.temp, DroneCommand.tof };
-
-            foreach (var command in commands)
+            if (!DroneClient.Instance.SDKInitialized)
             {
-                if (DroneClient.Instance.SDKInitialized)
-                {
-                    DroneClient.Instance.SendCommand(new DroneRequest
-                    {
-                        RequestType = RequestType.ReadCommand,
-                        Command = command
-                    });
-                }
+                Logger.Instance.LogWarning("SDK is not initialized yet");
+                stateText.text = $"State: <color=red>offline</color>";
+                continue;
             }
 
+            stateText.text = $"State: <color=green>online</color>";
+            pitchText.text = $"Pitch: {DroneClient.Instance.DroneStats.pitch}";
+            yawText.text = $"Yaw: {DroneClient.Instance.DroneStats.yaw}";
+            rollText.text = $"Roll: {DroneClient.Instance.DroneStats.roll}";
             batteryText.text = $"Battery: {DroneClient.Instance.DroneStats.battery}";
-            speedText.text = $"Speed: {DroneClient.Instance.DroneStats.speed}";
             timeText.text = $"Time: {DroneClient.Instance.DroneStats.time}";
-            tempText.text = $"Temp: {DroneClient.Instance.DroneStats.temp}";
             tofText.text = $"Tof: {DroneClient.Instance.DroneStats.tof}";
             heightText.text = $"Height: {DroneClient.Instance.DroneStats.height}";
+            baroText.text = $"Baro: {DroneClient.Instance.DroneStats.baro}";
+            templText.text = $"Templ: {DroneClient.Instance.DroneStats.templ}";
+            temphText.text = $"Temph: {DroneClient.Instance.DroneStats.temph}";
+            agxText.text = $"Agx: {DroneClient.Instance.DroneStats.agx}";
+            agyText.text = $"Agy: {DroneClient.Instance.DroneStats.agy}";
+            agzText.text = $"Agz: {DroneClient.Instance.DroneStats.agz}";
 
             lastUpdated.text = $"{DateTime.Now}";
         }

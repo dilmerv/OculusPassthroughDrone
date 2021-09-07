@@ -3,7 +3,11 @@
 [Serializable]
 public class DroneStats
 {
-    public string speed;
+    public string pitch;
+
+    public string yaw;
+
+    public string roll;
 
     public string battery;
 
@@ -11,13 +15,17 @@ public class DroneStats
 
     public string tof;
 
-    public string temp;
-
     public string height;
-
-    public string acceleration;
 
     public string baro;
 
-    public string attitude;
+    public string templ;
+
+    public string temph;
+
+    public string agx;
+
+    public string agy;
+
+    public string agz;
 }

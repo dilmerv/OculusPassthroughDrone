@@ -1,7 +1,6 @@
 using DilmerGames.Core.Singletons;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -24,20 +23,18 @@ public class DroneClient : Singleton<DroneClient>
     [SerializeField, Tooltip("Used for Standalone Scene")]
     private bool connectInAwake = false;
 
-    private Queue<DroneRequest> droneRequests = new Queue<DroneRequest>();
-
     private UdpClient UdpClient { set; get; }
 
     private Thread receivingThread;
-
-    // Connected: is set once UDP Connection is successful
-    public bool Connected { private set; get; }
 
     // SDKInitialized: is required before sending flying commands the drone
     // this is pretty much saying let's add SDK connectivity
     public bool SDKInitialized { private set; get; }
 
-    public DroneStats DroneStats { get; set; } = new DroneStats();
+    [SerializeField]
+    private DroneStats droneStats = new DroneStats();
+
+    public DroneStats DroneStats => droneStats;
 
     // logging
 
@@ -62,32 +59,17 @@ public class DroneClient : Singleton<DroneClient>
 
     public void StartDrone()
     {
-        if (Connected) return;
-
-        try
-        {
-            UdpClient = new UdpClient();
-            UdpClient.Connect(droneIP, controllerPort);
-            Connected = UdpClient.Client.Connected;
-            if(Connected) UpdateLogWithLock("Connected");
-        }
-        catch (Exception e)
-        {
-            UpdateLogWithLock(e.Message);
-            Connected = false;
-            return;
-        }
+        UdpClient = new UdpClient();
+        UdpClient.Client.Bind(new IPEndPoint(IPAddress.Any, statePort));
 
         // start threads
-        receivingThread = CreateThread(ProcessCommand);
+        CreateThread(receivingThread, StateReceiver);
     }
 
-    private Thread CreateThread(Action action)
+    private void CreateThread(Thread thread, Action action)
     {
-        ThreadStart threadStart = new ThreadStart(action);
-        Thread thread = new Thread(threadStart);
+        thread = new Thread(new ThreadStart(action));
         thread.Start();
-        return thread;
     }
 
     // This method should only be used for control type commands
@@ -102,60 +84,49 @@ public class DroneClient : Singleton<DroneClient>
             Command = droneCommand
         };
 
-        droneRequests.Enqueue(droneRequest);
+        LogMessages.Enqueue($"{droneRequest.Command} {droneRequest.RequestType} {droneRequest.Payload}");
 
         byte[] message = Encoding.ASCII.GetBytes($"{droneRequest.Payload}");
-        UdpClient.Send(message, message.Length);
+        UdpClient.Send(message, message.Length, new IPEndPoint(IPAddress.Parse(droneIP), controllerPort));
     }
 
     public void SendCommand(DroneRequest droneRequest)
     {
-        droneRequests.Enqueue(droneRequest);
+        LogMessages.Enqueue($"{droneRequest.Command} {droneRequest.RequestType} {droneRequest.Payload}");
+
         byte[] message = Encoding.ASCII.GetBytes($"{droneRequest.Payload}");
-        UdpClient.Send(message, message.Length);
+        UdpClient.Send(message, message.Length, new IPEndPoint(IPAddress.Parse(droneIP), controllerPort));
     }
 
-    public void ProcessCommand()
+    public void StateReceiver()
     {
         while (true)
         {
             lock (lockObject)
             {
-                if (droneRequests.Count > 0)
+                IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, statePort);
+                try
                 {
-                    IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Parse(droneIP), statePort);
+                    byte[] receiveBytes = UdpClient.Receive(ref RemoteIpEndPoint);
+                    string response = Encoding.ASCII.GetString(receiveBytes);
 
-                    try
+                    if (response == $"{ResponseType.ok}")
                     {
-                        byte[] receiveBytes = UdpClient.Receive(ref RemoteIpEndPoint);
-                        string responseData = Encoding.ASCII.GetString(receiveBytes);
-
-                        DroneRequest droneRequest = droneRequests.Dequeue();
-                        
-                        // only happens once
-                        if(!SDKInitialized) SDKInitialized = droneRequest.Command == DroneCommand.command;
-
-                        // continue if OK or ERROR
-                        if ((new string[] { "OK", "ERROR" }).Contains(responseData.ToUpper())) continue;
-
-                        DroneStats.UpdateStats(new DroneReponse
-                        {
-                            Command = droneRequest.Command,
-                            Response = responseData
-                        });
-
-                        if (!droneRequest.Command.IsStatsCommand())
-                        {
-                            UpdateLogWithLock($"Drone Request Type: {droneRequest.RequestType}");
-                            UpdateLogWithLock($"Drone Request Command: {droneRequest.Command}");
-                            UpdateLogWithLock($"Drone Request Payload: {droneRequest.Payload}");
-                            UpdateLogWithLock($"\nServer Received: {responseData}");
-                        }
+                        SDKInitialized = true;
+                        UpdateLogWithLock(response);
                     }
-                    catch (Exception e)
+                    else if (response == $"{ResponseType.error}")
                     {
-                        UpdateLogWithLock(e.Message);
+                        UpdateLogWithLock(response);
                     }
+                    else if (response.Contains(";"))
+                    {
+                        droneStats.UpdateStats(response);
+                    }
+                }
+                catch (Exception e)
+                {
+                    UpdateLogWithLock(e.Message);
                 }
             }
         }
@@ -177,9 +148,6 @@ public class DroneClient : Singleton<DroneClient>
             UdpClient.Dispose();
         }
 
-        if (receivingThread != null)
-        {
-            receivingThread.Abort();
-        }
+        if (receivingThread != null) receivingThread.Abort();
     }
 }

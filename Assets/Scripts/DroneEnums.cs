@@ -39,8 +39,8 @@ public enum DroneAction
     Backward,
     Up,
     Down,
-    YawLeft,
-    YawRight,
+    RotateRight,
+    RotateLeft,
     // core actions
     Connect,
     InitializeSDK,
@@ -61,8 +61,25 @@ public enum RequestType
     ReadCommand,
 }
 
+public enum DroneStatsAttribute
+{
+    bat,
+    pitch,
+    roll,
+    yaw,
+    h,
+    time,
+    tof,
+    baro,
+    templ,
+    temph,
+    agx,
+    agy,
+    agz
+}
+
 public enum ResponseType
 { 
-    OK,
-    ERROR
+    ok,
+    error
 }

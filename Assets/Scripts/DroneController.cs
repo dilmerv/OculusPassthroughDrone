@@ -8,15 +8,17 @@ public class DroneController : MonoBehaviour
     private int rightDirection = 0;
     private int upDirection = 0;
     private int downDirection = 0;
-   
+    private int rotateRightDirection = 0;
+    private int rotateLeftDirection = 0;
+
     void Update()
     {
-        DroneActionMapping.Instance.CoreActionInputBindings[DroneAction.Connect]();
-
-        if (!DroneClient.Instance.Connected) return;
-
         #region Main Commands
+        DroneActionMapping.Instance.CoreActionInputBindings[DroneAction.Connect]();
         DroneActionMapping.Instance.CoreActionInputBindings[DroneAction.InitializeSDK]();
+
+        if (!DroneClient.Instance.SDKInitialized) return;
+
         DroneActionMapping.Instance.CoreActionInputBindings[DroneAction.TakeOff]();
         DroneActionMapping.Instance.CoreActionInputBindings[DroneAction.Landing]();
         DroneActionMapping.Instance.CoreActionInputBindings[DroneAction.Emergency]();
@@ -29,6 +31,8 @@ public class DroneController : MonoBehaviour
         DroneActionMapping.Instance.MovementInputBindings[DroneAction.Right](ref rightDirection);
         DroneActionMapping.Instance.MovementInputBindings[DroneAction.Up](ref upDirection);
         DroneActionMapping.Instance.MovementInputBindings[DroneAction.Down](ref downDirection);
+        DroneActionMapping.Instance.MovementInputBindings[DroneAction.RotateRight](ref rotateRightDirection);
+        DroneActionMapping.Instance.MovementInputBindings[DroneAction.RotateLeft](ref rotateLeftDirection);
         #endregion
     }
 }
