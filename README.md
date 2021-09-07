@@ -17,4 +17,4 @@ Architecture:
 
 Demos:
 
-<img src="https://github.com/dilmerv/BCIDroneDemos/blob/master/docs/demo_1.gif" width="250">
+<img src="https://github.com/dilmerv/BCIDroneDemos/blob/master/docs/images/demo_1.gif" width="250">
