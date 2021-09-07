@@ -911,22 +911,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ffa8e1eda33ddb4d90635f7363f4beb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  updateFrequency: 1
-  pitchText: {fileID: 1798925174}
-  yawText: {fileID: 948915406}
-  rollText: {fileID: 209215512}
-  batteryText: {fileID: 284274288}
-  timeText: {fileID: 419457555}
-  tofText: {fileID: 1384552102}
-  heightText: {fileID: 192702504}
-  baroText: {fileID: 1308000942}
-  templText: {fileID: 308642784}
-  temphText: {fileID: 1563453326}
-  agxText: {fileID: 1235960195}
-  agyText: {fileID: 823612366}
-  agzText: {fileID: 622486381}
-  lastUpdated: {fileID: 811614531}
-  stateText: {fileID: 100201945}
 --- !u!1 &284274286
 GameObject:
   m_ObjectHideFlags: 0
@@ -1715,24 +1699,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6cf56be9c3946643bb086a1cb5f64be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  droneIP: 192.168.10.1
-  controllerPort: 8889
-  statePort: 8890
-  connectInAwake: 1
-  droneStats:
-    pitch: 
-    yaw: 
-    roll: 
-    battery: 
-    time: 
-    tof: 
-    height: 
-    baro: 
-    templ: 
-    temph: 
-    agx: 
-    agy: 
-    agz: 
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -2176,19 +2142,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 871575970}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 232593361}
-        m_TargetAssemblyTypeName: DroneStateManager, Assembly-CSharp
-        m_MethodName: StarStats
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &871575970
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2309,19 +2263,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 935588042}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 665659843}
-        m_TargetAssemblyTypeName: DroneClient, Assembly-CSharp
-        m_MethodName: SendCommand
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: land
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &935588042
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2943,19 +2885,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1064486691}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 665659843}
-        m_TargetAssemblyTypeName: DroneClient, Assembly-CSharp
-        m_MethodName: SendCommand
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: takeoff
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1064486691
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3414,7 +3344,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c774560f0f1afa4683b0af8800acec4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ovrPassthroughLayer: {fileID: 0}
 --- !u!1 &1384552100
 GameObject:
   m_ObjectHideFlags: 0
@@ -3899,19 +3828,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1780419591}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 665659843}
-        m_TargetAssemblyTypeName: DroneClient, Assembly-CSharp
-        m_MethodName: SendCommand
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: emergency
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1780419591
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4423,19 +4340,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2142231896}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 665659843}
-        m_TargetAssemblyTypeName: DroneClient, Assembly-CSharp
-        m_MethodName: SendCommand
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: command
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &2142231896
 MonoBehaviour:
   m_ObjectHideFlags: 0

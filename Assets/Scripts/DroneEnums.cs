@@ -1,8 +1,6 @@
 ﻿public enum DroneCommand
 {
-    command,
-    takeoff,
-    land
+
 }
 
 public enum RequestType
