@@ -1,5 +1,5 @@
-# BCIDroneDemos
-BCI Drone Demos by using Oculus Quest 2, Unity, Tello, and Brain Computer Interfaces.
+# Oculus Passthrough Drone
+Oculus Passthrough Drone Demos by using Oculus Quest 2, Unity, Tello, and Brain Computer Interfaces.
 
 This repo aims to teach you how to build you own Drone FPV by using the following technologies:
 
