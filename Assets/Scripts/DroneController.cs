@@ -1,7 +1,23 @@
+using DilmerGames.Core.Singletons;
+using OculusSampleFramework;
 using UnityEngine;
 
-public class DroneController : MonoBehaviour
+public class DroneController : Singleton<DroneController>
 {
+    [SerializeField]
+    private DroneControllerType droneControllerType = DroneControllerType.Standalone;
+
+    [SerializeField]
+    private HandsManager handManager;
+
+    public HandsManager HandManager
+    {
+        get
+        {
+            return handManager;
+        }
+    }
+
     private int forwardDirection = 0;
     private int backwardDirection = 0;
     private int leftDirection = 0;
@@ -11,28 +27,48 @@ public class DroneController : MonoBehaviour
     private int rotateRightDirection = 0;
     private int rotateLeftDirection = 0;
 
+    private void Awake()
+    {
+        Logger.Instance.LogInfo($"{droneControllerType} enabled");
+    }
+
     void Update()
     {
-        #region Main Commands
-        DroneActionMapping.Instance.CoreActionInputBindings[DroneAction.Connect]();
-        DroneActionMapping.Instance.CoreActionInputBindings[DroneAction.InitializeSDK]();
+        // true for standalone since we don't support digital joyticks yet
+        if (droneControllerType == DroneControllerType.Standalone) return;
 
-        if (!DroneClient.Instance.SDKInitialized) return;
+        #region VR Controller Actions
+        if (droneControllerType == DroneControllerType.Controllers)
+        {
+            DroneActionMapping.Instance.ControllerCoreActionInputBindings[DroneAction.Connect]();
+            DroneActionMapping.Instance.ControllerCoreActionInputBindings[DroneAction.InitializeSDK]();
 
-        DroneActionMapping.Instance.CoreActionInputBindings[DroneAction.TakeOff]();
-        DroneActionMapping.Instance.CoreActionInputBindings[DroneAction.Landing]();
-        DroneActionMapping.Instance.CoreActionInputBindings[DroneAction.Emergency]();
-        #endregion
+            if (!DroneClient.Instance.SDKInitialized) return;
 
-        #region Handle Movement
-        DroneActionMapping.Instance.MovementInputBindings[DroneAction.Forward](ref forwardDirection);
-        DroneActionMapping.Instance.MovementInputBindings[DroneAction.Backward](ref backwardDirection);
-        DroneActionMapping.Instance.MovementInputBindings[DroneAction.Left](ref leftDirection);
-        DroneActionMapping.Instance.MovementInputBindings[DroneAction.Right](ref rightDirection);
-        DroneActionMapping.Instance.MovementInputBindings[DroneAction.Up](ref upDirection);
-        DroneActionMapping.Instance.MovementInputBindings[DroneAction.Down](ref downDirection);
-        DroneActionMapping.Instance.MovementInputBindings[DroneAction.RotateRight](ref rotateRightDirection);
-        DroneActionMapping.Instance.MovementInputBindings[DroneAction.RotateLeft](ref rotateLeftDirection);
+            DroneActionMapping.Instance.ControllerCoreActionInputBindings[DroneAction.TakeOff]();
+            DroneActionMapping.Instance.ControllerCoreActionInputBindings[DroneAction.Landing]();
+            DroneActionMapping.Instance.ControllerCoreActionInputBindings[DroneAction.Emergency]();
+
+            DroneActionMapping.Instance.ControllersMovementInputBindings[DroneAction.Forward](ref forwardDirection);
+            DroneActionMapping.Instance.ControllersMovementInputBindings[DroneAction.Backward](ref backwardDirection);
+            DroneActionMapping.Instance.ControllersMovementInputBindings[DroneAction.Left](ref leftDirection);
+            DroneActionMapping.Instance.ControllersMovementInputBindings[DroneAction.Right](ref rightDirection);
+            DroneActionMapping.Instance.ControllersMovementInputBindings[DroneAction.Up](ref upDirection);
+            DroneActionMapping.Instance.ControllersMovementInputBindings[DroneAction.Down](ref downDirection);
+            DroneActionMapping.Instance.ControllersMovementInputBindings[DroneAction.RotateRight](ref rotateRightDirection);
+            DroneActionMapping.Instance.ControllersMovementInputBindings[DroneAction.RotateLeft](ref rotateLeftDirection);
+        }
+        else if (droneControllerType == DroneControllerType.Hands)
+        {
+            DroneActionMapping.Instance.HandsCoreActionInputBindings[DroneAction.Connect]();
+            DroneActionMapping.Instance.HandsCoreActionInputBindings[DroneAction.InitializeSDK]();
+
+            if (!DroneClient.Instance.SDKInitialized) return;
+
+            DroneActionMapping.Instance.HandsCoreActionInputBindings[DroneAction.TakeOff]();
+            DroneActionMapping.Instance.HandsCoreActionInputBindings[DroneAction.Landing]();
+            DroneActionMapping.Instance.HandsCoreActionInputBindings[DroneAction.Emergency]();
+        }
         #endregion
     }
 }

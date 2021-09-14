@@ -7,7 +7,7 @@ public class DroneActionMapping : Singleton<DroneActionMapping>
 {
     public delegate void ActionRef<T>(ref T item);
 
-    public Dictionary<DroneAction, ActionRef<int>> MovementInputBindings = new Dictionary<DroneAction, ActionRef<int>>
+    public Dictionary<DroneAction, ActionRef<int>> ControllersMovementInputBindings = new Dictionary<DroneAction, ActionRef<int>>
     {
         { 
             DroneAction.Left, (ref int direction) => HandleDirection(OVRInput.Button.SecondaryThumbstickLeft, 
@@ -43,7 +43,7 @@ public class DroneActionMapping : Singleton<DroneActionMapping>
         },
     };
 
-    public Dictionary<DroneAction, Action> CoreActionInputBindings = new Dictionary<DroneAction, Action>
+    public Dictionary<DroneAction, Action> ControllerCoreActionInputBindings = new Dictionary<DroneAction, Action>
     {
         {
             DroneAction.Connect, () => HandleCoreAction(OVRInput.Button.SecondaryIndexTrigger, () => DroneClient.Instance.StartDrone())
@@ -71,9 +71,56 @@ public class DroneActionMapping : Singleton<DroneActionMapping>
         }
     };
 
+    public Dictionary<DroneAction, Action> HandsCoreActionInputBindings = new Dictionary<DroneAction, Action>
+    {
+        {
+            DroneAction.Connect, () => HandleCoreAction(OVRHand.Hand.HandLeft, OVRHand.HandFinger.Index, DroneConstants.HAND_TRACKING_MIN_PINCH, 
+                () => DroneClient.Instance.StartDrone())
+        },
+        {
+            DroneAction.InitializeSDK, () =>
+            {
+                HandleCoreAction(OVRHand.Hand.HandLeft, OVRHand.HandFinger.Middle, DroneConstants.HAND_TRACKING_MIN_PINCH,
+                    () => DroneClient.Instance.SendCommand(
+                    new DroneRequest { RequestType = RequestType.ControlCommand, Command = DroneCommand.command }),
+                    () => DroneStateManager.Instance.StarStats());
+            }
+        },
+        {
+            DroneAction.TakeOff, () => HandleCoreAction(OVRHand.Hand.HandRight, OVRHand.HandFinger.Index, DroneConstants.HAND_TRACKING_MIN_PINCH,
+                () => DroneClient.Instance.SendCommand(new DroneRequest { RequestType = RequestType.ControlCommand, Command = DroneCommand.takeoff }))
+        },
+        {
+            DroneAction.Landing, () => HandleCoreAction(OVRHand.Hand.HandRight, OVRHand.HandFinger.Middle, DroneConstants.HAND_TRACKING_MIN_PINCH,
+                () => DroneClient.Instance.SendCommand(new DroneRequest { RequestType = RequestType.ControlCommand, Command = DroneCommand.land }))
+        },
+        {
+            DroneAction.Emergency, () => HandleCoreAction(OVRHand.Hand.HandRight, OVRHand.HandFinger.Ring, DroneConstants.HAND_TRACKING_MIN_PINCH,
+                () => DroneClient.Instance.SendCommand(new DroneRequest { RequestType = RequestType.ControlCommand, Command = DroneCommand.emergency }))
+        }
+    };
+
+
     private static void HandleCoreAction(OVRInput.Button button, params Action[] callbacks)
     {
         if (OVRInput.GetDown(button)) foreach (var callback in callbacks) callback?.Invoke();
+    }
+
+    private static void HandleCoreAction(OVRHand.Hand hand, OVRHand.HandFinger handFinger, float minPinchStrength, params Action[] callbacks)
+    {
+        if(DroneController.Instance.HandManager == null)
+        {
+            Logger.Instance.LogInfo("Hands currently not enabled or not supported");
+            return;
+        }
+
+        OVRHand currentHand = hand == OVRHand.Hand.HandLeft ? DroneController.Instance.HandManager.LeftHand : 
+            DroneController.Instance.HandManager.RightHand;
+
+        if (currentHand.GetFingerIsPinching(handFinger) && currentHand.GetFingerPinchStrength(handFinger) >= minPinchStrength)
+        {
+            foreach (var callback in callbacks) callback?.Invoke();
+        }
     }
 
     private static void HandleDirection(OVRInput.Button button, ref int direction, DroneCommand command, string commandFormat, 
@@ -81,7 +128,7 @@ public class DroneActionMapping : Singleton<DroneActionMapping>
     {
         if (OVRInput.Get(button))
         {
-            direction = droneSpeedType == DroneSpeedType.Negative ? direction - DroneConstants.speed : direction + DroneConstants.speed;
+            direction = droneSpeedType == DroneSpeedType.Negative ? direction - DroneConstants.DRONE_SPEED : direction + DroneConstants.DRONE_SPEED;
             DroneClient.Instance.SendCommand(new DroneRequest
             {
                 RequestType = RequestType.ControlCommand,

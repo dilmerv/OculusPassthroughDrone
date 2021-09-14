@@ -30,6 +30,13 @@
 
 }
 
+public enum DroneControllerType
+{ 
+    Standalone,
+    Controllers,
+    Hands
+}
+
 public enum DroneAction
 {
     // move actions

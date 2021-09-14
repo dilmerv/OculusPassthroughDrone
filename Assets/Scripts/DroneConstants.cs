@@ -1,4 +1,6 @@
-﻿public static class DroneConstants
+﻿public class DroneConstants
 {
-    public const int speed = 10;
+    public const int DRONE_SPEED = 10;
+
+    public const float HAND_TRACKING_MIN_PINCH = 0.6f;
 }
