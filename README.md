@@ -20,4 +20,4 @@ Demos:
 |Demos|||
 |---|---|---|
 |Taking Off|Real-time Stats|Device Online|
-|<img src="https://github.com/dilmerv/OculusPassthroughDrone/blob/master/docs/images/demo_1.gif" width="250">|<img src="https://github.com/dilmerv/OculusPassthroughDrone/blob/master/docs/images/demo_2.gif" width="250">|<img src="https://github.com/dilmerv/OculusPassthroughDrone/blob/master/docs/images/demo_3.gif" width="250">|
+|<img src="https://github.com/dilmerv/OculusPassthroughDrone/blob/master/docs/images/demo_0.gif" width="250">|<img src="https://github.com/dilmerv/OculusPassthroughDrone/blob/master/docs/images/demo_1.gif" width="250">|<img src="https://github.com/dilmerv/OculusPassthroughDrone/blob/master/docs/images/demo_2.gif" width="250">|
