@@ -9,14 +9,38 @@ public class DroneActionMapping : Singleton<DroneActionMapping>
 
     public Dictionary<DroneAction, ActionRef<int>> MovementInputBindings = new Dictionary<DroneAction, ActionRef<int>>
     {
-        { DroneAction.Left, (ref int direction) => HandleDirection(OVRInput.Button.SecondaryThumbstickLeft, ref direction, DroneCommand.rc,     "{0} 0 0 0", DroneSpeedType.Negative)},
-        { DroneAction.Right, (ref int direction) => HandleDirection(OVRInput.Button.SecondaryThumbstickRight, ref direction, DroneCommand.rc,   "{0} 0 0 0", DroneSpeedType.Positive)},
-        { DroneAction.Forward, (ref int direction) => HandleDirection(OVRInput.Button.SecondaryThumbstickUp, ref direction, DroneCommand.rc,    "0 {0} 0 0", DroneSpeedType.Positive)},
-        { DroneAction.Backward, (ref int direction) => HandleDirection(OVRInput.Button.SecondaryThumbstickDown, ref direction, DroneCommand.rc, "0 {0} 0 0", DroneSpeedType.Negative)},
-        { DroneAction.Up, (ref int direction) => HandleDirection(OVRInput.Button.PrimaryThumbstickUp, ref direction, DroneCommand.rc,           "0 0 {0} 0", DroneSpeedType.Positive)},
-        { DroneAction.Down, (ref int direction) => HandleDirection(OVRInput.Button.PrimaryThumbstickDown, ref direction, DroneCommand.rc,       "0 0 {0} 0", DroneSpeedType.Negative)},
-        { DroneAction.RotateLeft, (ref int direction) => HandleDirection(OVRInput.Button.PrimaryThumbstickLeft, ref direction, DroneCommand.ccw,   "{0}", DroneSpeedType.Negative)},
-        { DroneAction.RotateRight, (ref int direction) => HandleDirection(OVRInput.Button.PrimaryThumbstickRight, ref direction, DroneCommand.cw,  "{0}", DroneSpeedType.Positive)},
+        { 
+            DroneAction.Left, (ref int direction) => HandleDirection(OVRInput.Button.SecondaryThumbstickLeft, 
+                ref direction, DroneCommand.rc, "{0} 0 0 0", DroneSpeedType.Negative, -100, 100)
+        },
+        { 
+            DroneAction.Right, (ref int direction) => HandleDirection(OVRInput.Button.SecondaryThumbstickRight, 
+            ref direction, DroneCommand.rc, "{0} 0 0 0", DroneSpeedType.Positive, -100, 100)
+        },
+        { 
+            DroneAction.Forward, (ref int direction) => HandleDirection(OVRInput.Button.SecondaryThumbstickUp, 
+            ref direction, DroneCommand.rc, "0 {0} 0 0", DroneSpeedType.Positive, -100, 100)
+        },
+        { 
+            DroneAction.Backward, (ref int direction) => HandleDirection(OVRInput.Button.SecondaryThumbstickDown, 
+            ref direction, DroneCommand.rc, "0 {0} 0 0", DroneSpeedType.Negative, -100, 100)
+        },
+        { 
+            DroneAction.Up, (ref int direction) => HandleDirection(OVRInput.Button.PrimaryThumbstickUp, 
+            ref direction, DroneCommand.rc, "0 0 {0} 0", DroneSpeedType.Positive, -100, 100)
+        },
+        { 
+            DroneAction.Down, (ref int direction) => HandleDirection(OVRInput.Button.PrimaryThumbstickDown, 
+            ref direction, DroneCommand.rc, "0 0 {0} 0", DroneSpeedType.Negative, -100, 100)
+        },
+        { 
+            DroneAction.RotateLeft, (ref int direction) => HandleDirection(OVRInput.Button.PrimaryThumbstickLeft, 
+            ref direction, DroneCommand.ccw, "{0}", DroneSpeedType.Positive, 1, 1000)
+        },
+        { 
+            DroneAction.RotateRight, (ref int direction) => HandleDirection(OVRInput.Button.PrimaryThumbstickRight, 
+            ref direction, DroneCommand.cw, "{0}", DroneSpeedType.Positive, 1, 1000)
+        },
     };
 
     public Dictionary<DroneAction, Action> CoreActionInputBindings = new Dictionary<DroneAction, Action>
@@ -52,7 +76,8 @@ public class DroneActionMapping : Singleton<DroneActionMapping>
         if (OVRInput.GetDown(button)) foreach (var callback in callbacks) callback?.Invoke();
     }
 
-    private static void HandleDirection(OVRInput.Button button, ref int direction, DroneCommand command, string commandFormat, DroneSpeedType droneSpeedType)
+    private static void HandleDirection(OVRInput.Button button, ref int direction, DroneCommand command, string commandFormat, 
+        DroneSpeedType droneSpeedType, float min, float max)
     {
         if (OVRInput.Get(button))
         {
@@ -61,7 +86,7 @@ public class DroneActionMapping : Singleton<DroneActionMapping>
             {
                 RequestType = RequestType.ControlCommand,
                 Command = command,
-                Payload = $"{command} {string.Format(commandFormat, Mathf.Clamp(direction, -100, 100))}"
+                Payload = $"{command} {string.Format(commandFormat, Mathf.Clamp(direction, min, max))}"
             });
         }
         else if (OVRInput.GetUp(button)) direction = 0;
