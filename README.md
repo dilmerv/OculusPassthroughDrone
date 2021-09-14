@@ -13,8 +13,11 @@ Two main scenes to look at for your own reference:
 
 Architecture:
 
-<img src="https://github.com/dilmerv/BCIDroneDemos/blob/master/docs/architecture.png" width="500">
+<img src="https://github.com/dilmerv/OculusPassthroughDrone/blob/master/docs/architecture.png" width="500">
 
 Demos:
 
-<img src="https://github.com/dilmerv/BCIDroneDemos/blob/master/docs/images/demo_1.gif" width="250">
+|Demos|||
+|---|---|---|
+|Taking Off|Real-time Stats|Device Online|
+|<img src="https://github.com/dilmerv/OculusPassthroughDrone/blob/master/docs/images/demo_1.gif" width="250">|<img src="https://github.com/dilmerv/OculusPassthroughDrone/blob/master/docs/images/demo_2.gif" width="250">|<img src="https://github.com/dilmerv/OculusPassthroughDrone/blob/master/docs/images/demo_3.gif" width="250">|
