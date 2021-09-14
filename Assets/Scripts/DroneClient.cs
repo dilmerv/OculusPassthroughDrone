@@ -27,6 +27,8 @@ public class DroneClient : Singleton<DroneClient>
 
     private Thread receivingThread;
 
+    public bool Connected { private set; get; }
+
     // SDKInitialized: is required before sending flying commands the drone
     // this is pretty much saying let's add SDK connectivity
     public bool SDKInitialized { private set; get; }
@@ -59,11 +61,15 @@ public class DroneClient : Singleton<DroneClient>
 
     public void StartDrone()
     {
+        if (Connected) return;
+
         UdpClient = new UdpClient();
         UdpClient.Client.Bind(new IPEndPoint(IPAddress.Any, statePort));
 
         // start threads
         CreateThread(receivingThread, StateReceiver);
+
+        Connected = true;
     }
 
     private void CreateThread(Thread thread, Action action)

@@ -1,5 +1,4 @@
 using DilmerGames.Core.Singletons;
-using OculusSampleFramework;
 using UnityEngine;
 
 public class DroneController : Singleton<DroneController>
@@ -12,6 +11,10 @@ public class DroneController : Singleton<DroneController>
 
     [SerializeField]
     private OVRHand rightHand;
+
+    private OVRSkeleton leftHandSkeleton;
+
+    private OVRSkeleton rightHandSkeleton;
 
     public OVRHand LeftHand
     {
@@ -29,6 +32,22 @@ public class DroneController : Singleton<DroneController>
         }
     }
 
+    public OVRSkeleton LeftHandSkeleton
+    {
+        get
+        {
+            return leftHandSkeleton;
+        }
+    }
+
+    public OVRSkeleton RightHandSkeleton
+    {
+        get
+        {
+            return rightHandSkeleton;
+        }
+    }
+
     private int forwardDirection = 0;
     private int backwardDirection = 0;
     private int leftDirection = 0;
@@ -40,6 +59,9 @@ public class DroneController : Singleton<DroneController>
 
     private void Awake()
     {
+        leftHandSkeleton = leftHand.GetComponent<OVRSkeleton>();
+        rightHandSkeleton = rightHand.GetComponent<OVRSkeleton>();
+
         Logger.Instance.LogInfo($"{droneControllerType} enabled");
     }
 

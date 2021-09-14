@@ -1,6 +1,7 @@
 ﻿using DilmerGames.Core.Singletons;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class DroneActionMapping : Singleton<DroneActionMapping>
@@ -73,29 +74,35 @@ public class DroneActionMapping : Singleton<DroneActionMapping>
 
     public Dictionary<DroneAction, Action> HandsCoreActionInputBindings = new Dictionary<DroneAction, Action>
     {
+        // TODO: When OpenXR supports GetFingerIsPinching we can use the code below:
+        //{
+        //    DroneAction.Connect, () => HandleCoreAction(OVRHand.Hand.HandLeft, OVRHand.HandFinger.Index, DroneConstants.HAND_TRACKING_MIN_PINCH, 
+        //        () => DroneClient.Instance.StartDrone())
+        //},
+
         {
-            DroneAction.Connect, () => HandleCoreAction(OVRHand.Hand.HandLeft, OVRHand.HandFinger.Index, DroneConstants.HAND_TRACKING_MIN_PINCH, 
+            DroneAction.Connect, () => HandleCoreAction(OVRHand.Hand.HandLeft, OVRSkeleton.BoneId.Hand_IndexTip, DroneConstants.HAND_TRACKING_MIN_FINGER_DISTANCE,
                 () => DroneClient.Instance.StartDrone())
         },
         {
             DroneAction.InitializeSDK, () =>
             {
-                HandleCoreAction(OVRHand.Hand.HandLeft, OVRHand.HandFinger.Middle, DroneConstants.HAND_TRACKING_MIN_PINCH,
+                HandleCoreAction(OVRHand.Hand.HandLeft,  OVRSkeleton.BoneId.Hand_MiddleTip, DroneConstants.HAND_TRACKING_MIN_FINGER_DISTANCE,
                     () => DroneClient.Instance.SendCommand(
                     new DroneRequest { RequestType = RequestType.ControlCommand, Command = DroneCommand.command }),
                     () => DroneStateManager.Instance.StarStats());
             }
         },
         {
-            DroneAction.TakeOff, () => HandleCoreAction(OVRHand.Hand.HandRight, OVRHand.HandFinger.Index, DroneConstants.HAND_TRACKING_MIN_PINCH,
+            DroneAction.TakeOff, () => HandleCoreAction(OVRHand.Hand.HandRight, OVRSkeleton.BoneId.Hand_IndexTip, DroneConstants.HAND_TRACKING_MIN_FINGER_DISTANCE,
                 () => DroneClient.Instance.SendCommand(new DroneRequest { RequestType = RequestType.ControlCommand, Command = DroneCommand.takeoff }))
         },
         {
-            DroneAction.Landing, () => HandleCoreAction(OVRHand.Hand.HandRight, OVRHand.HandFinger.Middle, DroneConstants.HAND_TRACKING_MIN_PINCH,
+            DroneAction.Landing, () => HandleCoreAction(OVRHand.Hand.HandRight, OVRSkeleton.BoneId.Hand_MiddleTip, DroneConstants.HAND_TRACKING_MIN_FINGER_DISTANCE,
                 () => DroneClient.Instance.SendCommand(new DroneRequest { RequestType = RequestType.ControlCommand, Command = DroneCommand.land }))
         },
         {
-            DroneAction.Emergency, () => HandleCoreAction(OVRHand.Hand.HandRight, OVRHand.HandFinger.Ring, DroneConstants.HAND_TRACKING_MIN_PINCH,
+            DroneAction.Emergency, () => HandleCoreAction(OVRHand.Hand.HandRight, OVRSkeleton.BoneId.Hand_RingTip, DroneConstants.HAND_TRACKING_MIN_FINGER_DISTANCE,
                 () => DroneClient.Instance.SendCommand(new DroneRequest { RequestType = RequestType.ControlCommand, Command = DroneCommand.emergency }))
         }
     };
@@ -106,7 +113,7 @@ public class DroneActionMapping : Singleton<DroneActionMapping>
         if (OVRInput.GetDown(button)) foreach (var callback in callbacks) callback?.Invoke();
     }
 
-    private static void HandleCoreAction(OVRHand.Hand hand, OVRHand.HandFinger handFinger, float minPinchStrength, params Action[] callbacks)
+    private static void HandleCoreAction(OVRHand.Hand hand, OVRSkeleton.BoneId boneId, float minDistance, params Action[] callbacks)
     {
         if(DroneController.Instance.LeftHand == null && DroneController.Instance.RightHand == null)
         {
@@ -114,14 +121,28 @@ public class DroneActionMapping : Singleton<DroneActionMapping>
             return;
         }
 
-        OVRHand currentHand = hand == OVRHand.Hand.HandLeft ? DroneController.Instance.LeftHand : 
-            DroneController.Instance.RightHand;
+        OVRSkeleton handSkeleton = hand == OVRHand.Hand.HandLeft ? DroneController.Instance.LeftHandSkeleton : 
+            DroneController.Instance.RightHandSkeleton;
 
-        if (currentHand.GetFingerIsPinching(handFinger) && currentHand.GetFingerPinchStrength(handFinger) >= minPinchStrength)
+        var thumbTip = handSkeleton.Bones.SingleOrDefault(b => b.Id == OVRSkeleton.BoneId.Hand_ThumbTip);
+        var finger = handSkeleton.Bones.SingleOrDefault(b => b.Id == boneId);
+
+        if (thumbTip != null && finger != null)
+        {
+            if (Vector2.Distance(thumbTip.Transform.position, finger.Transform.position) <= minDistance)
+            {
+                Logger.Instance.LogInfo($"{hand} applying - distance: {Vector2.Distance(thumbTip.Transform.position, finger.Transform.position)}");
+                foreach (var callback in callbacks) callback?.Invoke();
+            }
+        }
+
+        // OpenXR doesn't GetFingerIsPinching or Strength so until it is fixed we can't use the following code:
+        /* if (currentHand.GetFingerIsPinching(handFinger) && currentHand.GetFingerPinchStrength(handFinger) >= minPinchStrength)
         {
             Logger.Instance.LogInfo($"{hand} {handFinger} {minPinchStrength}");
             foreach (var callback in callbacks) callback?.Invoke();
         }
+        */
     }
 
     private static void HandleDirection(OVRInput.Button button, ref int direction, DroneCommand command, string commandFormat, 
