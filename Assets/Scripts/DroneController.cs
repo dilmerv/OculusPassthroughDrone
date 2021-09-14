@@ -8,13 +8,24 @@ public class DroneController : Singleton<DroneController>
     private DroneControllerType droneControllerType = DroneControllerType.Standalone;
 
     [SerializeField]
-    private HandsManager handManager;
+    private OVRHand leftHand;
 
-    public HandsManager HandManager
+    [SerializeField]
+    private OVRHand rightHand;
+
+    public OVRHand LeftHand
     {
         get
         {
-            return handManager;
+            return leftHand;
+        }
+    }
+
+    public OVRHand RightHand
+    {
+        get
+        {
+            return rightHand;
         }
     }
 

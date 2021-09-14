@@ -108,17 +108,18 @@ public class DroneActionMapping : Singleton<DroneActionMapping>
 
     private static void HandleCoreAction(OVRHand.Hand hand, OVRHand.HandFinger handFinger, float minPinchStrength, params Action[] callbacks)
     {
-        if(DroneController.Instance.HandManager == null)
+        if(DroneController.Instance.LeftHand == null && DroneController.Instance.RightHand == null)
         {
             Logger.Instance.LogInfo("Hands currently not enabled or not supported");
             return;
         }
 
-        OVRHand currentHand = hand == OVRHand.Hand.HandLeft ? DroneController.Instance.HandManager.LeftHand : 
-            DroneController.Instance.HandManager.RightHand;
+        OVRHand currentHand = hand == OVRHand.Hand.HandLeft ? DroneController.Instance.LeftHand : 
+            DroneController.Instance.RightHand;
 
         if (currentHand.GetFingerIsPinching(handFinger) && currentHand.GetFingerPinchStrength(handFinger) >= minPinchStrength)
         {
+            Logger.Instance.LogInfo($"{hand} {handFinger} {minPinchStrength}");
             foreach (var callback in callbacks) callback?.Invoke();
         }
     }

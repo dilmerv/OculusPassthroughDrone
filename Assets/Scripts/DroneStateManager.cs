@@ -66,7 +66,6 @@ public class DroneStateManager : Singleton<DroneStateManager>
 
             if (!DroneClient.Instance.SDKInitialized)
             {
-                Logger.Instance.LogWarning("SDK is not initialized yet");
                 stateText.text = $"State: <color=red>offline</color>";
                 continue;
             }
