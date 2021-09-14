@@ -43,7 +43,7 @@ public static class OVRPlugin
 #if OVRPLUGIN_UNSUPPORTED_PLATFORM
 	public static readonly System.Version wrapperVersion = _versionZero;
 #else
-	public static readonly System.Version wrapperVersion = OVRP_1_63_0.version;
+	public static readonly System.Version wrapperVersion = OVRP_1_64_0.version;
 #endif
 
 #if !OVRPLUGIN_UNSUPPORTED_PLATFORM
@@ -263,6 +263,7 @@ public static class OVRPlugin
 		EyeLevel = 0,
 		FloorLevel = 1,
 		Stage = 2,
+		View = 4,
 		Count,
 	}
 
@@ -1296,7 +1297,7 @@ public static class OVRPlugin
 	}
 
 
-	public enum ColorSpace
+  public enum ColorSpace
 	{
 		/// The default value from GetHmdColorSpace until SetClientColorDesc is called. Only valid on PC, and will be remapped to Quest on Mobile
 		Unknown = 0,
@@ -1322,6 +1323,7 @@ public static class OVRPlugin
 	{
 		Unknown = 0,
 		DisplayRefreshRateChanged = 1,
+
 	}
 
 	private const int EventDataBufferSize = 4000;
@@ -6630,4 +6632,12 @@ public static class OVRPlugin
 		public static extern Result ovrp_UpdateInsightPassthroughGeometryTransform(ulong geometryInstanceHandle, Matrix4x4 T_world_model);
 	}
 #endif // !OVRPLUGIN_UNSUPPORTED_PLATFORM
+
+	private static class OVRP_1_64_0
+	{
+		public static readonly System.Version version = new System.Version(1, 64, 0);
+
+
+
+	}
 }

@@ -32,6 +32,17 @@ namespace Oculus.Platform
       var isError = CAPI.ovr_Message_IsError(c_message);
       requestID = CAPI.ovr_Message_GetRequestID(c_message);
 
+      if (!isError) {
+        var msg = CAPI.ovr_Message_GetNativeMessage(c_message);
+        if (CAPI.ovr_Message_IsError(msg)) {
+          IntPtr errorHandle = CAPI.ovr_Message_GetError(msg);
+          error = new Error(
+            CAPI.ovr_Error_GetCode(errorHandle),
+            CAPI.ovr_Error_GetMessage(errorHandle),
+            CAPI.ovr_Error_GetHttpCode(errorHandle));
+        }
+      }
+
       if (isError)
       {
         IntPtr errorHandle = CAPI.ovr_Message_GetError(c_message);

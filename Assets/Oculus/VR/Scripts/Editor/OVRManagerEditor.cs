@@ -48,7 +48,7 @@ public class OVRManagerEditor : Editor
         OVRProjectConfigEditor.DrawProjectConfigInspector(projectConfig);
 
 		EditorGUILayout.Space();
-		EditorGUILayout.LabelField("Mixed Reality Capture for Quest (experimental)", EditorStyles.boldLabel);
+		EditorGUILayout.LabelField("Mixed Reality Capture for Quest", EditorStyles.boldLabel);
 		EditorGUI.indentLevel++;
 		OVREditorUtil.SetupEnumField(target, "ActivationMode", ref manager.mrcActivationMode, ref modified);
 		EditorGUI.indentLevel--;

@@ -449,6 +449,31 @@ class OVRPluginUpdater
 	{
 #if UNITY_2020_1_OR_NEWER
 		bool activateOpenXRPlugin = pluginPkg.Version >= minimalProductionVersionForOpenXR;
+		if (activateOpenXRPlugin && !unityRunningInBatchmode)
+		{
+			while(true)
+			{
+				// display a dialog to prompt developer to confirm if they want to proceed with OpenXR backend
+				int result = EditorUtility.DisplayDialogComplex("OpenXR Backend",
+					"OpenXR is now fully supported by Oculus. However, some of the functionalities are not supported in the baseline OpenXR spec, which would be provided in our future releases.\n\nIf you depend on the following features in your project, please click Cancel to continue using the legacy backend:\n\n  1. Advanced hand tracking features (collision capsule, input metadata, Thumb0, default handmesh)\n  2. Mixed Reality Capture on Rift\n\nNew features, such as Passthrough API, are only supported through the OpenXR backend.\n\nPlease check our release notes for more details.\n\nReminder: you can switch the legacy and OpenXR backends at any time from Oculus > Tools > OpenXR menu options.", "Use OpenXR", "Cancel", "Release Notes");
+				if (result == 0)
+					break;
+				else if (result == 1)
+				{
+					activateOpenXRPlugin = false;
+					break;
+				}
+				else if (result == 2)
+				{
+					Application.OpenURL("https://developer.oculus.com/downloads/package/unity-integration/");
+				}
+				else
+				{
+					UnityEngine.Debug.LogWarningFormat("Unrecognized result from DisplayDialogComplex: {0}", result);
+					break;
+				}
+			}
+		}
 #else
 		bool activateOpenXRPlugin = false;
 #endif
@@ -842,7 +867,7 @@ class OVRPluginUpdater
 #endif // !USING_XR_SDK
 	}
 
-	[MenuItem("Oculus/Tools/OpenXR/Switch to Legacy OVRPlugin (with LibOVR & VRAPI backends)")]
+	[MenuItem("Oculus/Tools/OpenXR/Switch to Legacy OVRPlugin (with LibOVR and VRAPI backends)")]
 	private static void RestoreStandardOVRPlugin()
 	{
 		if (!unityVersionSupportsAndroidUniversal) // sanity check

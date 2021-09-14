@@ -241,6 +241,8 @@ public class OVRManager : MonoBehaviour, OVRMixedRealityCaptureConfiguration
 	/// </summary>
 	public static event Action<float, float> DisplayRefreshRateChanged;
 
+/// SceneApi definitions
+
 	/// <summary>
 	/// Occurs when Health & Safety Warning is dismissed.
 	/// </summary>
