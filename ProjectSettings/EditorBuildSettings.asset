@@ -5,9 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/OculusDroneClient.unity
     guid: c5b020f8761243846919a2f68de9e02d
+  - enabled: 1
+    path: Assets/Scenes/OculusDroneClientHandTracking.unity
+    guid: 3674251ee77c82c49b5c4b98028d7c96
   - enabled: 0
     path: Assets/Scenes/StandaloneDroneClient.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
