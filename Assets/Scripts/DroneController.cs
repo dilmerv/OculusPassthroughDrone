@@ -57,6 +57,14 @@ public class DroneController : Singleton<DroneController>
     private int rotateRightDirection = 0;
     private int rotateLeftDirection = 0;
 
+
+    private bool fingerLeftIndexPinch;
+    private bool fingerLeftMiddlePinch;
+
+    private bool fingerRightIndexPinch;
+    private bool fingerRightMiddlePinch;
+    private bool fingerRightRingPinch;
+
     private void Awake()
     {
         leftHandSkeleton = leftHand.GetComponent<OVRSkeleton>();
@@ -93,14 +101,14 @@ public class DroneController : Singleton<DroneController>
         }
         else if (droneControllerType == DroneControllerType.Hands)
         {
-            DroneActionMapping.Instance.HandsCoreActionInputBindings[DroneAction.Connect]();
-            DroneActionMapping.Instance.HandsCoreActionInputBindings[DroneAction.InitializeSDK]();
+            DroneActionMapping.Instance.HandsCoreActionInputBindings[DroneAction.Connect](ref fingerLeftIndexPinch);
+            DroneActionMapping.Instance.HandsCoreActionInputBindings[DroneAction.InitializeSDK](ref fingerLeftMiddlePinch);
 
             if (!DroneClient.Instance.SDKInitialized) return;
 
-            DroneActionMapping.Instance.HandsCoreActionInputBindings[DroneAction.TakeOff]();
-            DroneActionMapping.Instance.HandsCoreActionInputBindings[DroneAction.Landing]();
-            DroneActionMapping.Instance.HandsCoreActionInputBindings[DroneAction.Emergency]();
+            DroneActionMapping.Instance.HandsCoreActionInputBindings[DroneAction.TakeOff](ref fingerRightIndexPinch);
+            DroneActionMapping.Instance.HandsCoreActionInputBindings[DroneAction.Landing](ref fingerRightMiddlePinch);
+            DroneActionMapping.Instance.HandsCoreActionInputBindings[DroneAction.Emergency](ref fingerRightRingPinch);
         }
         #endregion
     }
