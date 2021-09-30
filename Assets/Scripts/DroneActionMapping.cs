@@ -133,13 +133,13 @@ public class DroneActionMapping : Singleton<DroneActionMapping>
 
         if (thumbTip != null && finger != null)
         {
-            if (Vector2.Distance(thumbTip.Transform.position, finger.Transform.position) <= minPinchDown && !pinchDown)
+            if (Vector3.Distance(thumbTip.Transform.position, finger.Transform.position) <= minPinchDown && !pinchDown)
             {
                 Logger.Instance.LogInfo($"{hand} pinch down with {boneId}: {Vector2.Distance(thumbTip.Transform.position, finger.Transform.position)}");
                 pinchDown = true;
                 foreach (var callback in callbacks) callback?.Invoke();
             }
-            else if (pinchDown && Vector2.Distance(thumbTip.Transform.position, finger.Transform.position) >= minPinchRelease)
+            else if (pinchDown && Vector3.Distance(thumbTip.Transform.position, finger.Transform.position) >= minPinchRelease)
             {
                 Logger.Instance.LogInfo($"{hand} pinch released with {boneId}: {Vector2.Distance(thumbTip.Transform.position, finger.Transform.position)}");
                 pinchDown = false;
